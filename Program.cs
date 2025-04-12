@@ -11,9 +11,9 @@ namespace Tree_of_Life
         /// </summary>
         [STAThread]
 
-        public static Node? getNode(ArrayList nodeList, int nodeId)
+        public static Modele.Node? getNode(ArrayList nodeList, int nodeId)
         {
-            foreach (Node node in nodeList)
+            foreach (Modele.Node node in nodeList)
             {
                 if (node.getId() == nodeId) 
                 {
@@ -42,7 +42,7 @@ namespace Tree_of_Life
 
                 if (values.Length == 8)
                 {
-                    nodesList.Add(new Node(values));
+                    nodesList.Add(new Modele.Node(values));
                 }
             }
 
@@ -54,8 +54,8 @@ namespace Tree_of_Life
                 Debug.Print(line);
                 string[] values = line.Split(',');
 
-                Node source=getNode(nodesList, line[0]);
-                Node target= getNode(nodesList, line[1]);
+                Modele.Node? source=getNode(nodesList, line[0]);
+                Modele.Node? target= getNode(nodesList, line[1]);
                 if (source != null && target != null)
                 {
                     source.setParentNode(target);
