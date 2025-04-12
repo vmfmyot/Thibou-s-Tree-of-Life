@@ -12,6 +12,61 @@ namespace Tree_of_Life
     {
 
         private Dictionary<int, Node> nodes = new Dictionary<int, Node>(); //id -> node
+
+        /******************
+         *  CONSTRUCTEUR  *
+         ******************/
+        public Modele()
+        {
+            var links = new StreamReader(File.OpenRead("../../../data/treeoflife_links.csv"));
+            var nodes = new StreamReader(File.OpenRead("../../../data/treeoflife_nodes.csv"));
+
+            Debug.Print(nodes.ReadLine()); //on enleve l'entete
+
+            //Création des nodes
+            while (!nodes.EndOfStream)
+            {
+                string line = nodes.ReadLine();
+                Debug.Print(line);
+                string[] values = line.Split(',');
+
+                if (values.Length == 8)
+                {
+                    this.nodes.Add(Int32.Parse(values[0]), new Modele.Node(values));
+                }
+            }
+
+            //création des liens
+            links.ReadLine();
+            while (!links.EndOfStream)
+            {
+                string line = links.ReadLine();
+                Debug.Print(line);
+                string[] values = line.Split(',');
+
+                if (this.nodes.ContainsKey(line[0]) && this.nodes.ContainsKey(line[1]))
+                {
+                    this.nodes[line[1]].setParentNode(this.nodes[line[0]]);
+                    this.nodes[line[0]].addChild(this.nodes[line[1]]);
+                }
+            }
+        }
+
+        /****************
+         *  GETTERS     *
+         ****************/
+        public Node getRootNode()
+        {  return this.nodes[1]; } //donne la racine de l'arbre
+        
+        public Dictionary<int, Node> getNodes()
+        { return this.nodes; } //donne le dictionnaire de tous les noeuds
+
+
+
+
+        /****************************************************************
+         * Classe Node : représente un noeud de l'arbre aka une espèce
+         ****************************************************************/
         public class Node
         {
             /****************
@@ -27,10 +82,10 @@ namespace Tree_of_Life
             bool isCluster;
 
             //Confidence in the placement of the node (in the tree)
-            enum Confidence { CONFIDENT, NOTCONFIDENT, UNKNOWN };
+            public enum Confidence { CONFIDENT, NOTCONFIDENT, UNKNOWN };
 
             //Phylesis of the node
-            enum Phylesis { MONOPHYLETIC, UNCERTAIN, NOTMONOPHYLETIC };
+            public enum Phylesis { MONOPHYLETIC, UNCERTAIN, NOTMONOPHYLETIC };
 
             Confidence confidence;
             Phylesis phylesis;
@@ -39,10 +94,9 @@ namespace Tree_of_Life
             ArrayList? children; //list of children NODES (not ids)
 
 
-            /****************
-            *    METHODS    *
-            ****************/
-
+            /*********************
+            *    CONSTRUCTEUR    *
+            **********************/
             public Node(String[] list)
             {
                 id = Int32.Parse(list[0]);
@@ -59,10 +113,31 @@ namespace Tree_of_Life
                 isCluster = nbChildren > 5;
             }
 
+            
+            /*******************
+            *    ACCESSEURS    *
+            ********************/
+
             public int getId() { return id; }
+            public string getName() { return name; }
 
             public void setParentNode(Node parent) { parentNode = parent; }
+            public Node? getParentNode() { return parentNode; }
+
+            public ArrayList? getChildren() { return children; }
             public void addChild(Node child) { children.Add(child); }
+            public int getNbChildren() { return nbChildren; }
+            
+            public bool isLeafNode() { return isLeaf; }
+            public bool hasWebsiteNode() { return hasWebsite; }
+            public bool isExtinctNode() { return extinct; }
+            public bool isClusterNode() { return isCluster; }
+            
+            public Confidence getConfidence() { return confidence; }
+            public Phylesis getPhylesis() { return phylesis; }
+            
+            
+
 
             /** TODO
              */
@@ -96,42 +171,6 @@ namespace Tree_of_Life
             }
         }
 
-
-        public Modele()
-        {
-            var links = new StreamReader(File.OpenRead("../../../data/treeoflife_links.csv"));
-            var nodes = new StreamReader(File.OpenRead("../../../data/treeoflife_nodes.csv"));
-
-            Debug.Print(nodes.ReadLine()); //on enleve l'entete
-
-            //Création des nodes
-            while (!nodes.EndOfStream)
-            {
-                string line = nodes.ReadLine();
-                Debug.Print(line);
-                string[] values = line.Split(',');
-
-                if (values.Length == 8)
-                {
-                    this.nodes.Add(Int32.Parse(values[0]), new Modele.Node(values));
-                }
-            }
-
-            //création des liens
-            links.ReadLine();
-            while (!links.EndOfStream)
-            {
-                string line = links.ReadLine();
-                Debug.Print(line);
-                string[] values = line.Split(',');
-
-                if (this.nodes.ContainsKey(line[0]) && this.nodes.ContainsKey(line[1]))
-                   {
-                    this.nodes[line[1]].setParentNode(this.nodes[line[0]]);
-                    this.nodes[line[0]].addChild(this.nodes[line[1]]);
-                }
-            }
-        }
 
     }
 }
