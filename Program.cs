@@ -28,41 +28,6 @@ namespace Tree_of_Life
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
 
-            var links = new StreamReader(File.OpenRead("../../../data/treeoflife_links.csv"));
-            var nodes = new StreamReader(File.OpenRead("../../../data/treeoflife_nodes.csv"));
-
-            Debug.Print(nodes.ReadLine()); //on enleve l'entete
-
-            //Création des nodes
-            ArrayList nodesList = new ArrayList();
-            while (!nodes.EndOfStream){
-                string line = nodes.ReadLine();
-                Debug.Print(line);
-                string[] values = line.Split(',');
-
-                if (values.Length == 8)
-                {
-                    nodesList.Add(new Modele.Node(values));
-                }
-            }
-
-            //création des liens
-            links.ReadLine();
-            while (!links.EndOfStream)
-            {
-                string line = links.ReadLine();
-                Debug.Print(line);
-                string[] values = line.Split(',');
-
-                Modele.Node? source=getNode(nodesList, line[0]);
-                Modele.Node? target= getNode(nodesList, line[1]);
-                if (source != null && target != null)
-                {
-                    source.setParentNode(target);
-                    target.addChild(source);
-                }
-            }
-
             ApplicationConfiguration.Initialize();
             Application.Run(new Form1());
         }

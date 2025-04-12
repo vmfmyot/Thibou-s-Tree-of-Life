@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,8 @@ namespace Tree_of_Life
 {
     internal class Modele
     {
+
+        private Dictionary<int, Node> nodes = new Dictionary<int, Node>(); //id -> node
         public class Node
         {
             /****************
@@ -89,6 +92,43 @@ namespace Tree_of_Life
                 {
                     case "1": return true;
                     default: return false;
+                }
+            }
+        }
+
+
+        public Modele()
+        {
+            var links = new StreamReader(File.OpenRead("../../../data/treeoflife_links.csv"));
+            var nodes = new StreamReader(File.OpenRead("../../../data/treeoflife_nodes.csv"));
+
+            Debug.Print(nodes.ReadLine()); //on enleve l'entete
+
+            //Création des nodes
+            while (!nodes.EndOfStream)
+            {
+                string line = nodes.ReadLine();
+                Debug.Print(line);
+                string[] values = line.Split(',');
+
+                if (values.Length == 8)
+                {
+                    this.nodes.Add(Int32.Parse(values[0]), new Modele.Node(values));
+                }
+            }
+
+            //création des liens
+            links.ReadLine();
+            while (!links.EndOfStream)
+            {
+                string line = links.ReadLine();
+                Debug.Print(line);
+                string[] values = line.Split(',');
+
+                if (this.nodes.ContainsKey(line[0]) && this.nodes.ContainsKey(line[1]))
+                   {
+                    this.nodes[line[1]].setParentNode(this.nodes[line[0]]);
+                    this.nodes[line[0]].addChild(this.nodes[line[1]]);
                 }
             }
         }
