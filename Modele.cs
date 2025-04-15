@@ -27,7 +27,7 @@ namespace Tree_of_Life
             while (!nodes.EndOfStream)
             {
                 string line = nodes.ReadLine();
-                Debug.Print(line);
+                //Debug.Print(line);
                 string[] values = line.Split(',');
 
                 if (values.Length == 8)
@@ -41,11 +41,12 @@ namespace Tree_of_Life
             while (!links.EndOfStream)
             {
                 string line = links.ReadLine();
-                Debug.Print(line);
+                //Debug.Print(line);
                 string[] values = line.Split(',');
 
                 if (this.nodes.ContainsKey(line[0]) && this.nodes.ContainsKey(line[1]))
                 {
+                    Debug.Print("Ajout du lien entre " + line[0] + " et " + line[1]);
                     this.nodes[line[1]].setParentNode(this.nodes[line[0]]);
                     this.nodes[line[0]].addChild(this.nodes[line[1]]);
                 }
@@ -110,7 +111,7 @@ namespace Tree_of_Life
 
                 children = new ArrayList();
 
-                isCluster = nbChildren > 5;
+                isCluster = nbChildren > 10;
             }
 
             
@@ -124,7 +125,7 @@ namespace Tree_of_Life
             public void setParentNode(Node parent) { parentNode = parent; }
             public Node? getParentNode() { return parentNode; }
 
-            public ArrayList? getChildren() { return children; }
+            public ArrayList getChildren() { return children; }
             public void addChild(Node child) { children.Add(child); }
             public int getNbChildren() { return nbChildren; }
             

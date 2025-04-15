@@ -1,3 +1,5 @@
+using static Tree_of_Life.Modele;
+
 namespace Tree_of_Life
 {
     public partial class Form1 : Form
@@ -13,18 +15,20 @@ namespace Tree_of_Life
             //MessageBox.Show("Root Node: " + rootNode.getName());
 
             // Initialize the screen
-            Ecran.ZoneArbre arbre = new Ecran.ZoneArbre();
+            Ecran.ZoneArbre arbre = new Ecran.ZoneArbre(modele);
             this.Controls.Add(arbre);
             // Set the form's properties
             //this.Text = "Tree of Life";
-            Ecran.ZoneMenu menu = new Ecran.ZoneMenu();
+            Ecran.ZoneMenu menu = new Ecran.ZoneMenu(modele);
             this.Controls.Add(menu);
+
+            
 
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            
         }
     }
 }
