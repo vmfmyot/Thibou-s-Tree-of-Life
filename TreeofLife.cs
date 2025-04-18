@@ -1,3 +1,6 @@
+using static Tree_of_Life.Ecran;
+using System.Collections;
+using System.Diagnostics;
 using static Tree_of_Life.Modele;
 
 namespace Tree_of_Life
@@ -15,20 +18,210 @@ namespace Tree_of_Life
             //MessageBox.Show("Root Node: " + rootNode.getName());
 
             // Initialize the screen
-            Ecran.ZoneArbre arbre = new Ecran.ZoneArbre(modele);
+            ZoneArbre arbre = new ZoneArbre(modele);
             this.Controls.Add(arbre);
             // Set the form's properties
             //this.Text = "Tree of Life";
-            Ecran.ZoneMenu menu = new Ecran.ZoneMenu(modele);
+            ZoneMenu menu = new ZoneMenu(modele);
             this.Controls.Add(menu);
 
-            
+
 
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            
+
         }
     }
+        
+
+
+
+        //ECRAN DE L'ARBRE -------------------------------------------------------------------
+        public class ZoneArbre : ScrollableControl
+        {
+            private Modele modele;
+            private Dictionary<Modele.Node, Point> positions;
+            private ArrayList displayed;
+            private ArrayList links;
+
+            public static Modele.Node rootNode;
+
+            //Constantes de taille
+            public static int tailleNode = 125;
+            public static int espaceNodeX = 175;
+            public static int espaceNodeY = 250;
+
+            public static bool init = true;
+
+
+        public ZoneArbre(Modele modele) : base()
+        {
+            this.modele = modele;
+            this.Location = new System.Drawing.Point(0, 0);
+            this.Size = new System.Drawing.Size(1000, 800);
+            this.BackColor = Color.White;
+            positions = new Dictionary<Modele.Node, Point>();
+            displayed = new ArrayList();
+            links = new ArrayList();
+            rootNode = modele.getRootNode();
+            this.AutoScroll = true;
+        }
+
+        public static void setRootNode(Modele.Node node)
+        {
+            rootNode= node;
+            init = false;
+        }
+
+            /*
+             * Dessine un noeud
+             * @param node : le noeud à dessiner
+             * @param x : la position x du noeud
+             * @param y : la position y du noeud
+             * @param pevent : l'événement de peinture
+             */
+            public void drawNode(Modele.Node node, int x, int y, PaintEventArgs pevent)
+            {
+                Brush b = new SolidBrush(Color.Orange);
+
+                if (node.isClusterNode())
+                {
+
+                    ClusterButton test = new ClusterButton(node, new Point(x, y));
+                    Controls.Add(test);
+                    
+                }
+                else
+                {
+                    NodeButton test2 = new NodeButton(node, new Point(x, y));
+                    Controls.Add(test2);
+                    
+                }
+            }
+
+            /*
+             * Dessine 1 lien entre deux noeuds
+             * @param pevent : l'événement de peinture
+             * @param p1 : le premier point
+             * @param p2 : le deuxième point
+             */
+            public void drawLink(PaintEventArgs pevent, Point source, Point target)
+            {
+                //Debug.Print("LINK : " + source.X + ", " + source.Y + " -> " + target.X + ", " + target.Y);
+
+                Point p1 = new Point(source.X + tailleNode / 2, source.Y);
+                Point p2 = new Point(p1.X, source.Y - (espaceNodeY - tailleNode) / 2);
+                Point p3 = new Point(target.X + tailleNode / 2, p2.Y);
+                Point p4 = new Point(p3.X, target.Y + tailleNode);
+
+
+                pevent.Graphics.DrawLine(Pens.Black, p1, p2);
+                pevent.Graphics.DrawLine(Pens.Black, p2, p3);
+                pevent.Graphics.DrawLine(Pens.Black, p3, p4);
+            }
+
+
+            /*
+             * Calcule la position de chaque noeud de l'arbre
+             * @param node : le noeud à partir duquel on calcule la position
+             * @param p : la position du noeud
+             */
+            public void calculTree(Modele.Node node, Point p)
+            {
+                if (positions.ContainsKey(node))
+                    positions[node] = p;
+                else
+                    positions.Add(node, p);
+
+                if (!node.isClusterNode() && (node.getChildren != null || node.getChildren().Count > 0))
+                {
+                    //Debug.Print("NOM : " + node.getName() + " is NOT a cluster !!");
+                    int depart = p.X - (node.getChildren().Count - 1) * espaceNodeX / 2;
+
+                    foreach (Modele.Node child in node.getChildren())
+                    {
+                        //Debug.Print("   CHILD : " + child.getName());
+                        //calculate the position of the child
+                        Point childPos = new Point(depart, p.Y - espaceNodeY);
+
+                        //Add the link to the link list
+                        links.Add((positions[node], childPos));
+
+                        //recursively calculate the tree for the child
+                        calculTree(child, childPos);
+                        depart += espaceNodeX;
+                    }
+
+                }
+                //else Debug.Print("NOM : " + node.getName() + " is a cluster....");
+            }
+
+        
+
+
+            /*
+             * Redessine l'écran
+             * @param pevent : l'événement de peinture
+             */
+            protected override void OnPaintBackground(PaintEventArgs pevent)
+            {
+            if (init)
+            {
+                calculTree(rootNode, new Point(400, 500));
+
+
+                foreach (Modele.Node node in positions.Keys)
+                {
+                    //draw the node
+                    drawNode(node, positions[node].X, positions[node].Y, pevent);
+                }
+                init = false;
+            }
+                //on efface l'aire de dessin
+                pevent.Graphics.Clear(Color.White);
+
+
+            foreach ((Point, Point) link in links)
+            {
+                drawLink(pevent, link.Item1, link.Item2);
+            }
+
+
+        }
+
+            /*
+             * Vérifie si la souris est sur un noeud
+             * @param x : la position x de la souris
+             * @param y : la position y de la souris
+             */
+            public bool contient(Point node, int xx, int yy)
+            {
+                return (xx >= node.X && xx <= node.X + tailleNode && yy >= node.Y && yy <= node.Y + tailleNode);
+            }
+
+
+       
+        }
+
+
+
+
+
+        //ECRAN MENU -------------------------------------------------------------------
+        public class ZoneMenu : Control
+        {
+            private Modele modele;
+            public ZoneMenu(Modele modele) : base()
+            {
+                this.modele = modele;
+                this.Location = new System.Drawing.Point(1000, 0);
+                this.Size = new System.Drawing.Size(400, 800);
+                this.BackColor = Color.LightGray;
+            }
+        }
+    
+
+
 }

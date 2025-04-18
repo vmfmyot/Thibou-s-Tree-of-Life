@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Tree_of_Life
 {
-    internal class Modele
+    public class Modele
     {
 
         private Dictionary<int, Node> nodes = new Dictionary<int, Node>(); //id -> node
@@ -113,7 +113,7 @@ namespace Tree_of_Life
 
                 children = new ArrayList();
 
-                isCluster = nbChildren > 5;
+                isCluster = nbChildren > 4;
             }
 
             
