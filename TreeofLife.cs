@@ -1,4 +1,4 @@
-using static Tree_of_Life.Ecran;
+using static Tree_of_Life.Controler;
 using System.Collections;
 using System.Diagnostics;
 using static Tree_of_Life.Modele;
@@ -24,7 +24,8 @@ namespace Tree_of_Life
             //this.Text = "Tree of Life";
             ZoneMenu menu = new ZoneMenu(modele);
             this.Controls.Add(menu);
-
+            NodeButton.setZoneArbre(arbre);
+            ClusterButton.setZoneArbre(arbre);
 
 
         }
@@ -42,9 +43,8 @@ namespace Tree_of_Life
         public class ZoneArbre : ScrollableControl
         {
             private Modele modele;
-            private Dictionary<Modele.Node, Point> positions;
-            private ArrayList displayed;
-            private ArrayList links;
+            public static Dictionary<Modele.Node, Point> positions;
+            public static ArrayList links;
 
             public static Modele.Node rootNode;
 
@@ -55,6 +55,8 @@ namespace Tree_of_Life
 
             public static bool init = true;
 
+            public static ArrayList buttons = new ArrayList();
+
 
         public ZoneArbre(Modele modele) : base()
         {
@@ -63,7 +65,6 @@ namespace Tree_of_Life
             this.Size = new System.Drawing.Size(1000, 800);
             this.BackColor = Color.White;
             positions = new Dictionary<Modele.Node, Point>();
-            displayed = new ArrayList();
             links = new ArrayList();
             rootNode = modele.getRootNode();
             this.AutoScroll = true;
@@ -72,7 +73,16 @@ namespace Tree_of_Life
         public static void setRootNode(Modele.Node node)
         {
             rootNode= node;
-            init = false;
+            buttons.Clear();
+            foreach (Control c in buttons)
+            {
+                buttons.Remove(c);
+                //Controls.Remove(c);
+                c.Dispose();
+            }
+            positions.Clear();
+            links.Clear();
+            init = true;
         }
 
             /*
@@ -88,16 +98,16 @@ namespace Tree_of_Life
 
                 if (node.isClusterNode())
                 {
+                    ClusterButton cn = new ClusterButton(node, new Point(x, y));
+                    Controls.Add(cn);
+                    buttons.Add(cn);
 
-                    ClusterButton test = new ClusterButton(node, new Point(x, y));
-                    Controls.Add(test);
-                    
                 }
                 else
                 {
-                    NodeButton test2 = new NodeButton(node, new Point(x, y));
-                    Controls.Add(test2);
-                    
+                        NodeButton nb = new NodeButton(node, new Point(x, y));
+                        Controls.Add(nb);
+                        buttons.Add(nb);
                 }
             }
 
@@ -135,7 +145,7 @@ namespace Tree_of_Life
                 else
                     positions.Add(node, p);
 
-                if (!node.isClusterNode() && (node.getChildren != null || node.getChildren().Count > 0))
+                if ( (node.getChildren().Count > 0 && !node.isClusterNode()) || node == rootNode)
                 {
                     //Debug.Print("NOM : " + node.getName() + " is NOT a cluster !!");
                     int depart = p.X - (node.getChildren().Count - 1) * espaceNodeX / 2;
@@ -169,37 +179,25 @@ namespace Tree_of_Life
             {
             if (init)
             {
-                calculTree(rootNode, new Point(400, 500));
+                //on efface l'aire de dessin
+                pevent.Graphics.Clear(Color.White);
 
+                calculTree(rootNode, new Point(400, 500));
 
                 foreach (Modele.Node node in positions.Keys)
                 {
                     //draw the node
                     drawNode(node, positions[node].X, positions[node].Y, pevent);
                 }
+
+                foreach ((Point, Point) link in links)
+                {
+                    drawLink(pevent, link.Item1, link.Item2);
+                }
+
                 init = false;
             }
-                //on efface l'aire de dessin
-                pevent.Graphics.Clear(Color.White);
-
-
-            foreach ((Point, Point) link in links)
-            {
-                drawLink(pevent, link.Item1, link.Item2);
-            }
-
-
         }
-
-            /*
-             * Vérifie si la souris est sur un noeud
-             * @param x : la position x de la souris
-             * @param y : la position y de la souris
-             */
-            public bool contient(Point node, int xx, int yy)
-            {
-                return (xx >= node.X && xx <= node.X + tailleNode && yy >= node.Y && yy <= node.Y + tailleNode);
-            }
 
 
        

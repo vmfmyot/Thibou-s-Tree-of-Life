@@ -14,20 +14,27 @@ using static System.ComponentModel.Design.ObjectSelectorEditor;
 
 namespace Tree_of_Life
 {
-    internal class Ecran
+    internal class Controler
     {
         Modele modele;
         ZoneArbre arbre;
 
-        public Ecran(Modele modele)
+        public Controler(Modele modele, ZoneArbre zoneArbre)
         {
             this.modele = modele;
+            this.arbre = zoneArbre;
         }
 
         //Classe pour représenter les boutons pour les nodes
         public class NodeButton : Button
         {
             private Modele.Node node;
+            public static ZoneArbre arbre;
+
+            public static void setZoneArbre(ZoneArbre a)
+            {
+                NodeButton.arbre = a;
+            }
             public NodeButton(Modele.Node node, Point p)
             {
                 this.node = node;
@@ -54,6 +61,12 @@ namespace Tree_of_Life
         public class ClusterButton : Button
         {
             private Modele.Node node;
+            public static ZoneArbre arbre;
+
+            public static void setZoneArbre(ZoneArbre a)
+            {
+                NodeButton.arbre = a;
+            }
             public ClusterButton(Modele.Node node, Point p)
             {
                 this.node = node;
