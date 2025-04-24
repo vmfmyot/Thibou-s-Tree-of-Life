@@ -168,7 +168,36 @@ namespace Tree_of_Life
                 //else Debug.Print("NOM : " + node.getName() + " is a cluster....");
             }
 
-        
+        /* On va d'abord tt en haut de l'arbre
+         * p sera la position du noeud en haut à gauche de l'arbre
+         * on fixe les positions de tous les enfants
+         * puis on prend le premier enfant et le dernier et on fait la moyenne des positiosn
+         * on pourra par la suite faire une translation sur tous les noeuds de l'arbre pour le centrer
+         */
+        public void calculTree2(Modele.Node node, Point p)
+        {
+            if (!positions.ContainsKey(node)) { // si le noeud n'est pas encore dans l'arbre
+                if (node.isClusterNode() || node.getChildren().Count == 0) //si le noeud est un cluster ou une leaf
+                {
+                    positions.Add(node, p);
+                }
+                else {
+                    int x = p.X;
+                    foreach (Modele.Node child in node.getChildren())
+                    {
+                        if (!positions.ContainsKey(child))
+                        {
+                            calculTree2(child, new Point(x, p.Y + espaceNodeY));
+                            x = positions[child].X + espaceNodeX;
+                        }
+                    }
+                    positions.Add(node, new Point((x+p.X-espaceNodeX) / 2, p.Y));
+
+                }
+            }
+        }
+
+
 
 
             /*
@@ -182,7 +211,7 @@ namespace Tree_of_Life
                 //on efface l'aire de dessin
                 pevent.Graphics.Clear(Color.White);
 
-                calculTree(rootNode, new Point(400, 500));
+                calculTree(rootNode, new Point(0, 0)); //400 500
 
                 foreach (Modele.Node node in positions.Keys)
                 {
