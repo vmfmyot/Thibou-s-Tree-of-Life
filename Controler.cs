@@ -18,11 +18,13 @@ namespace Tree_of_Life
     {
         Modele modele;
         ZoneArbre arbre;
+        ZoneMenu menu;
 
-        public Controler(Modele modele, ZoneArbre zoneArbre)
+        public Controler(Modele modele, ZoneArbre zoneArbre, ZoneMenu zoneMenu)
         {
             this.modele = modele;
             this.arbre = zoneArbre;
+            this.menu = zoneMenu;
         }
 
         //Classe pour représenter les boutons pour les nodes
@@ -30,11 +32,23 @@ namespace Tree_of_Life
         {
             private Modele.Node node;
             public static ZoneArbre arbre;
+            public static ZoneMenu menu;
 
             public static void setZoneArbre(ZoneArbre a)
             {
-                NodeButton.arbre = a;
+                if (arbre == null)
+                {
+                    NodeButton.arbre = a;
+                }
             }
+            public static void setZoneMenu(ZoneMenu m)
+            {
+                if (menu == null)
+                {
+                    NodeButton.menu = m;
+                }
+            }
+
             public NodeButton(Modele.Node node, Point p)
             {
                 this.node = node;
@@ -54,6 +68,38 @@ namespace Tree_of_Life
             protected override void OnClick(EventArgs e)
             {
                 Debug.Print("CLICK : " + node.getName() + " at " + this.Location.X + ", " + this.Location.Y);
+                //afficher nom espèce dans zoneMEnu
+                //check si link existe
+                //si oui : mettre image du site + lien clickable
+                //mettre état et phylesis
+
+                menu.especeCliquée.Text = node.getName();
+                
+                if(node.hasWebsiteNode())
+                {
+                    menu.website.Text = "http://tolweb.org/$"+node.getName()+"/$"+node.getId();
+                    menu.website.ActiveLinkColor = Color.Blue;
+                    menu.website.ForeColor = Color.Blue;
+                }
+                else
+                {
+                    menu.website.Text = "Pas de site internet disponible";
+                    menu.website.ActiveLinkColor = Color.Black;
+                    menu.website.ForeColor = Color.Black;
+                }
+                
+                if(node.isExtinctNode())
+                {
+                    menu.extinct.Text = "Espèce éteinte";
+                    menu.extinct.ForeColor = Color.Red;
+                }
+                else
+                {
+                    menu.extinct.Text = "Espèce en vie";
+                    menu.extinct.ForeColor = Color.Green;
+                }
+
+                menu.phylesis.Text = "Phylesis : " + node.getPhylesis();
             }
         }
 
@@ -62,11 +108,19 @@ namespace Tree_of_Life
         {
             private Modele.Node node;
             public static ZoneArbre arbre;
+            public static ZoneMenu menu;
 
             public static void setZoneArbre(ZoneArbre a)
             {
-                NodeButton.arbre = a;
+                if (arbre == null)
+                    ClusterButton.arbre = a;
             }
+            public static void setZoneMenu(ZoneMenu m)
+            {
+                if (menu == null)
+                    ClusterButton.menu = m;
+            }
+
             public ClusterButton(Modele.Node node, Point p)
             {
                 this.node = node;
@@ -110,7 +164,35 @@ namespace Tree_of_Life
 
             protected override void OnClick(EventArgs e)
             {
-                ZoneArbre.setRootNode(node);
+                arbre.setRootNode(node);
+
+                menu.especeCliquée.Text = node.getName();
+                
+                if (node.hasWebsiteNode())
+                {
+                    menu.website.Text = "http://tolweb.org/$" + node.getName() + "/$" + node.getId();
+                    menu.website.ActiveLinkColor = Color.Blue;
+                    menu.website.ForeColor = Color.Blue;
+                }
+                else
+                {
+                    menu.website.Text = "Pas de site internet disponible";
+                    menu.website.ActiveLinkColor = Color.Black;
+                    menu.website.ForeColor = Color.Black;
+                }
+
+                if (node.isExtinctNode())
+                {
+                    menu.extinct.Text = "Espèce éteinte";
+                    menu.extinct.ForeColor = Color.Red;
+                }
+                else
+                {
+                    menu.extinct.Text = "Espèce en vie";
+                    menu.extinct.ForeColor = Color.Green;
+                }
+
+                menu.phylesis.Text = "Phylesis : " + node.getPhylesis();
             }
 
         }

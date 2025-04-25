@@ -37,7 +37,7 @@
             // 
             // searchBox
             // 
-            searchBox.Location = new Point(1035, 35);
+            searchBox.Location = new Point(1174, 34);
             searchBox.Name = "searchBox";
             searchBox.Size = new Size(330, 27);
             searchBox.TabIndex = 0;
@@ -45,7 +45,7 @@
             // checkBox1
             // 
             checkBox1.AutoSize = true;
-            checkBox1.Location = new Point(1036, 81);
+            checkBox1.Location = new Point(1174, 81);
             checkBox1.Name = "checkBox1";
             checkBox1.Size = new Size(127, 24);
             checkBox1.TabIndex = 1;
@@ -55,7 +55,7 @@
             // checkBox2
             // 
             checkBox2.AutoSize = true;
-            checkBox2.Location = new Point(1036, 111);
+            checkBox2.Location = new Point(1174, 111);
             checkBox2.Name = "checkBox2";
             checkBox2.Size = new Size(199, 24);
             checkBox2.TabIndex = 2;
@@ -65,7 +65,7 @@
             // checkBox3
             // 
             checkBox3.AutoSize = true;
-            checkBox3.Location = new Point(1036, 141);
+            checkBox3.Location = new Point(1174, 141);
             checkBox3.Name = "checkBox3";
             checkBox3.Size = new Size(149, 24);
             checkBox3.TabIndex = 3;
@@ -75,7 +75,7 @@
             // checkBox4
             // 
             checkBox4.AutoSize = true;
-            checkBox4.Location = new Point(1036, 171);
+            checkBox4.Location = new Point(1174, 171);
             checkBox4.Name = "checkBox4";
             checkBox4.Size = new Size(228, 24);
             checkBox4.TabIndex = 4;
@@ -86,7 +86,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1382, 753);
+            ClientSize = new Size(1582, 953);
             Controls.Add(checkBox4);
             Controls.Add(checkBox3);
             Controls.Add(checkBox2);
