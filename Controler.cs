@@ -54,8 +54,8 @@ namespace Tree_of_Life
                 this.node = node;
                 this.Text = node.getName();
                 this.Size = new Size(ZoneArbre.tailleNode, ZoneArbre.tailleNode);
-                this.BackColor = Color.Orange;
-                this.ForeColor = Color.Black;
+                this.BackColor = node.getShade();
+                this.ForeColor = Color.White;
                 this.Font = new Font("Arial", 10, FontStyle.Bold);
                 this.Location = p;
                 this.Cursor = Cursors.Hand;
@@ -67,15 +67,14 @@ namespace Tree_of_Life
 
             protected override void OnClick(EventArgs e)
             {
-                Debug.Print("CLICK : " + node.getName() + " at " + this.Location.X + ", " + this.Location.Y);
-                //afficher nom espèce dans zoneMEnu
-                //check si link existe
-                //si oui : mettre image du site + lien clickable
-                //mettre état et phylesis
-
+                menu.setSelectedNode(node);
                 menu.especeCliquée.Text = node.getName();
-                
-                if(node.hasWebsiteNode())
+                menu.nodePath.Controls.Clear();
+                menu.printPath(menu.start, menu.nodePath);
+
+
+
+                if (node.hasWebsiteNode())
                 {
                     menu.website.Text = "http://tolweb.org/$"+node.getName()+"/$"+node.getId();
                     menu.website.ActiveLinkColor = Color.Blue;
@@ -126,8 +125,8 @@ namespace Tree_of_Life
                 this.node = node;
                 this.Text = node.getName();
                 this.Size = new Size(ZoneArbre.tailleNode, ZoneArbre.tailleNode);
-                this.BackColor = Color.Orange;
-                this.ForeColor = Color.Black;
+                this.BackColor = node.getShade();
+                this.ForeColor = Color.White;
                 this.Font = new Font("Arial", 10, FontStyle.Bold);
                 this.Location = p;
                 this.Cursor = Cursors.Hand;
@@ -164,10 +163,13 @@ namespace Tree_of_Life
 
             protected override void OnClick(EventArgs e)
             {
+                menu.setSelectedNode(node);
                 arbre.setRootNode(node);
 
                 menu.especeCliquée.Text = node.getName();
-                
+
+                menu.printPath(menu.start, menu.nodePath);
+
                 if (node.hasWebsiteNode())
                 {
                     menu.website.Text = "http://tolweb.org/$" + node.getName() + "/$" + node.getId();
@@ -191,13 +193,8 @@ namespace Tree_of_Life
                     menu.extinct.Text = "Espèce en vie";
                     menu.extinct.ForeColor = Color.Green;
                 }
-
                 menu.phylesis.Text = "Phylesis : " + node.getPhylesis();
             }
-
         }
-
-
-
     }     
 }

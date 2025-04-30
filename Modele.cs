@@ -53,6 +53,12 @@ namespace Tree_of_Life
                     this.nodes[parentId].addChild(this.nodes[childId]);
                 }
             }
+
+            foreach (Node n in this.nodes.Values)
+            {
+                n.setShade();
+                n.setPath(n);
+            }
         }
 
         /****************
@@ -84,6 +90,9 @@ namespace Tree_of_Life
             bool extinct;
             bool isCluster;
 
+            private Color shade;
+            private ArrayList path; //path to the root node
+
             //Confidence in the placement of the node (in the tree)
             public enum Confidence { CONFIDENT, NOTCONFIDENT, UNKNOWN };
 
@@ -112,8 +121,10 @@ namespace Tree_of_Life
                 phylesis = stringToPhylesis(list[7]);
 
                 children = new ArrayList();
+                path = new ArrayList();
 
                 isCluster = nbChildren > 4;
+
             }
 
             
@@ -138,8 +149,12 @@ namespace Tree_of_Life
             
             public Confidence getConfidence() { return confidence; }
             public Phylesis getPhylesis() { return phylesis; }
-            
-            
+
+            public Color getShade() { return shade; }
+
+            public ArrayList getPath() { return path; }
+
+
 
 
             /** TODO
@@ -170,6 +185,42 @@ namespace Tree_of_Life
                 {
                     case "1": return true;
                     default: return false;
+                }
+            }
+
+            public void setShade()
+            {
+                if (isCluster)
+                {
+                    int totalChildren = 1;
+                    int extinctChildren = 1;
+                    foreach (Node n in children)
+                    {
+                       if(n.isExtinctNode())
+                        {
+                            extinctChildren++;
+                        }
+                        totalChildren++;
+                    }
+                    shade = Color.FromArgb(255, 0, extinctChildren*255/totalChildren, 0);
+                }
+                else
+                {
+                    if (extinct)
+                    {
+                        shade= Color.FromArgb(255, 0, 0, 0); //black
+                    }
+                    else
+                        shade = Color.FromArgb(255, 0, 255, 0); //green
+                }
+            }
+
+            public void setPath(Node n)
+            {
+                this.path.Add(n.getName());
+                if (n.getParentNode() != null)
+                {
+                    this.setPath(n.getParentNode());
                 }
             }
         }
