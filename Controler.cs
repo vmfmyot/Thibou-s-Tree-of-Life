@@ -198,6 +198,11 @@ namespace Tree_of_Life
             }
         }
 
+
+        /*
+         * Label cliquable dans un chemin de parents de noeuds
+         * allant jusqu'au noeud sélectionné
+         */
         public class PathLabel : Label
         {
             private ZoneMenu menu;
@@ -210,6 +215,7 @@ namespace Tree_of_Life
                 this.node = n;
                 this.Text = n.getName();
                 this.Click += Label_Click;
+                this.Cursor = Cursors.Hand;
             }
             
 
@@ -217,6 +223,87 @@ namespace Tree_of_Life
             {
                 menu.setSelectedNode(node);
                 arbre.setRootNode(node);
+            }
+        }
+
+
+        /*
+         * Barre de recherche avec auto-complétion
+         * permettant de rechercher des espèces dans l'arbre
+         */
+        public class SearchBox : TextBox
+        {
+            Modele modele;
+            ArrayList resultLabels;
+
+            private Point loc;
+            private Size siz;
+
+            ZoneMenu menu;
+
+            public SearchBox(Modele m, ZoneMenu me) {
+                modele = m;
+                menu = me;
+
+                this.TextChanged += search;
+                resultLabels = new ArrayList();
+                for (int i = 0; i < 5; i++)
+                {
+                    resultLabels.Add(new Label());
+                }
+
+            }
+
+            public void search(object sender, EventArgs e) 
+            {
+                if( resultLabels.Count > 0 || resultLabels.Count != null) {
+                    foreach (Label l in resultLabels)
+                    {
+                        this.menu.Controls.Remove(l);
+                    }
+                }
+                
+                resultLabels.Clear();
+                ArrayList top5 = getTop5(this.Text);
+                int y = loc.Y + 30;
+
+                for (int i=0; i<top5.Count; i++)
+                {
+                    
+                    PathLabel l = new PathLabel((Node)top5[i], menu, menu.arbre);
+                    l.Location = new Point(loc.X, y);
+                    l.Font = new Font("Segoe UI", 9);
+                    l.Text = ((Node)top5[i]).getName();
+                    l.Size = siz;
+                    l.BackColor = Color.White;
+
+                    resultLabels.Add(l);
+                    this.menu.Controls.Add(l);
+                    y += 25;
+                }
+            }
+
+            public ArrayList getTop5(string text)
+            {
+                ArrayList res = new ArrayList();
+                foreach((String s, Node n) in modele.getSpeciesList())
+                {
+                    if (s.Contains(text))
+                    {
+                        res.Add(n);
+                        if (res.Count >= 5) return res;
+                    }
+                }
+                return res;
+            }
+
+            public void setLoc(int x, int y) {
+                loc.X = x; loc.Y = y;
+            }
+
+            public void setSiz(int l, int r)
+            {
+                siz = new Size(l, r);
             }
         }
     }     

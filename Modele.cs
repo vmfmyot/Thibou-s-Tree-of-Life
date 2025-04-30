@@ -12,6 +12,10 @@ namespace Tree_of_Life
     {
 
         private Dictionary<int, Node> nodes = new Dictionary<int, Node>(); //id -> node
+        //AutoCompleteStringCollection speciesList;
+        private Dictionary<string, Node> speciesList = new Dictionary<string, Node>();
+        public Dictionary<string, Node> getSpeciesList() { return this.speciesList; }
+
 
         /******************
          *  CONSTRUCTEUR  *
@@ -54,11 +58,17 @@ namespace Tree_of_Life
                 }
             }
 
+            speciesList = new Dictionary<string, Node>();
+
             foreach (Node n in this.nodes.Values)
             {
                 n.setShade();
                 n.setPath(n);
+                if (!speciesList.ContainsKey(n.getName()))
+                speciesList.Add(n.getName(), n);
             }
+
+            
         }
 
         /****************
@@ -70,6 +80,11 @@ namespace Tree_of_Life
         public Dictionary<int, Node> getNodes()
         { return this.nodes; } //donne le dictionnaire de tous les noeuds
 
+
+        //public AutoCompleteStringCollection getSpeciesList()
+        //{
+        //    return this.speciesList;
+        //}
 
 
 

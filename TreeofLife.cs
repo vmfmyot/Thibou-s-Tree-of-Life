@@ -362,7 +362,7 @@ namespace Tree_of_Life
         public class ZoneMenu : Control
         {
             private Modele modele;
-            private ZoneArbre arbre;
+            public ZoneArbre arbre;
             public Label especeCliquée;
             public LinkLabel website;
             public Button image;
@@ -373,6 +373,8 @@ namespace Tree_of_Life
 
 
             public Modele.Node selectedNode;
+
+            private SearchBox searchBox;
 
 
             //tailles stockées au cas où
@@ -387,13 +389,30 @@ namespace Tree_of_Life
                 this.zoneMenuWidth = w; this.zoneMenuHeight = h;
                 this.start = start;
 
-                this.especeCliquée = new Label();
+
+                //Création de la barre de recherche
+                searchBox = new SearchBox(modele, this);
+                searchBox.PlaceholderText = "Rechercher une espèce";
+                searchBox.Location = new Point(start + 50, 35);
+                searchBox.setLoc(start + 50, 35);
+                searchBox.Size = new Size(2*zoneMenuWidth/5, 30);
+                searchBox.setSiz(2 * zoneMenuWidth / 5, 30);
+                this.Controls.Add(searchBox);
+                //Auto-complétion lors de la recherche    
+                //searchBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                //searchBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                //searchBox.AutoCompleteCustomSource = modele.getSpeciesList(); //ERREUR : System.InvalidCastException : Interface non enregistrée
+
+
+            //Nom de l'espèce lorsque l'on clique
+            this.especeCliquée = new Label();
                 this.especeCliquée.Location = new System.Drawing.Point(start+zoneMenuWidth/5, 25+zoneMenuHeight/5);
                 this.especeCliquée.Font = new Font("Arial", 12, FontStyle.Bold);
                 this.especeCliquée.AutoSize = true;
                 this.especeCliquée.Size = new System.Drawing.Size(200, 20);
                 this.Controls.Add(this.especeCliquée);
 
+                //Lien du site lorsque l'on clique sur une espèce
                 this.website = new LinkLabel();
                 this.website.Location = new System.Drawing.Point(start + 100, 60 + zoneMenuHeight / 5);
                 this.website.Font = new Font("Arial", 12);
@@ -423,6 +442,8 @@ namespace Tree_of_Life
                 this.nodePath.AutoScroll = true;
                 this.Controls.Add(nodePath);
 
+                
+                //selectedNode par défaut pour éviter les erreurs de NULL
                 this.selectedNode = this.modele.getRootNode();
 
 
@@ -474,16 +495,13 @@ namespace Tree_of_Life
                     //l.Text = modele.getNodes()[id].getName();
 
                     pan.Controls.Add(l);
-                    initial += 150;
+                    initial += l.Size.Width;
                 }
 
             }
         }
 
-        public void MouseWheel() { }
 
-        
-        
         } //FIN ZONE MENU ------------------------------------------------------------------------------------
     
 
