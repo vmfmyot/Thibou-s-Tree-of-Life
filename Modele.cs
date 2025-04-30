@@ -62,8 +62,9 @@ namespace Tree_of_Life
 
             foreach (Node n in this.nodes.Values)
             {
-                n.setShade();
                 n.setPath(n);
+                n.countChildren(n);
+                n.setShade();
                 if (!speciesList.ContainsKey(n.getName()))
                 speciesList.Add(n.getName(), n);
             }
@@ -99,7 +100,8 @@ namespace Tree_of_Life
 
             int id;
             string name;
-            int nbChildren;
+            int nbChildren=-1;
+            int nbExtinctChildren = -1;
             bool isLeaf;
             bool hasWebsite;
             bool extinct;
@@ -128,7 +130,6 @@ namespace Tree_of_Life
             {
                 id = Int32.Parse(list[0]);
                 name = list[1];
-                nbChildren = Int32.Parse(list[2]);
                 isLeaf = stringToBool(list[3]);
                 hasWebsite = stringToBool(list[4]);
                 extinct = stringToBool(list[5]);
@@ -138,7 +139,7 @@ namespace Tree_of_Life
                 children = new ArrayList();
                 path = new ArrayList();
 
-                isCluster = nbChildren > 4;
+                isCluster = Int32.Parse(list[2]) > 4;
 
             }
 
@@ -156,6 +157,11 @@ namespace Tree_of_Life
             public ArrayList getChildren() { return children; }
             public void addChild(Node child) { children.Add(child); }
             public int getNbChildren() { return nbChildren; }
+            public void setNbChildren(int n) {  nbChildren = n; }
+
+            public int getNbExtinctChildren() {  return nbExtinctChildren; }
+            public void setNbExtinctChildren(int n) { nbExtinctChildren = n; }
+
             
             public bool isLeafNode() { return isLeaf; }
             public bool hasWebsiteNode() { return hasWebsite; }
@@ -203,21 +209,31 @@ namespace Tree_of_Life
                 }
             }
 
+            public void countChildren(Node n)
+            {
+                if(n.getNbChildren() == -1 )
+                {
+                    int count = 0;
+                    int countExtinct = 0;
+                    foreach( Node child in n.getChildren())
+                    {
+                        countChildren(child);
+                        count += child.getNbChildren()+1;
+                        if (child.isExtinctNode()) {countExtinct += child.getNbExtinctChildren() + 1; }
+                        else { countExtinct += child.getNbExtinctChildren(); }
+                    }
+                    n.setNbChildren(count);
+                    n.setNbExtinctChildren(countExtinct);
+                }
+            }
+
             public void setShade()
             {
                 if (isCluster)
                 {
-                    int totalChildren = 1;
-                    int extinctChildren = 1;
-                    foreach (Node n in children)
-                    {
-                       if(n.isExtinctNode())
-                        {
-                            extinctChildren++;
-                        }
-                        totalChildren++;
-                    }
-                    shade = Color.FromArgb(255, 0, extinctChildren*255/totalChildren, 0);
+                    int green = Convert.ToInt32(200 * (1-Decimal.Divide(nbExtinctChildren, nbChildren)));
+                    Debug.Print("" + green);
+                    shade = Color.FromArgb(200, 0, green, 0);
                 }
                 else
                 {
@@ -226,7 +242,7 @@ namespace Tree_of_Life
                         shade= Color.FromArgb(255, 0, 0, 0); //black
                     }
                     else
-                        shade = Color.FromArgb(255, 0, 255, 0); //green
+                        shade = Color.FromArgb(255, 0, 200, 0); //green
                 }
             }
 

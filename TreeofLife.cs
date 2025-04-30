@@ -66,9 +66,9 @@ namespace Tree_of_Life
             public int zoneArbreHeight;
 
         //Constantes de taille
-        public static int tailleNode = 125;
-            public static int espaceNodeX = 175;
-            public static int espaceNodeY = 250;
+        public static int tailleNode = 70;
+        public static int espaceNodeX = 10;
+        public static int espaceNodeY = 20;
 
             public static bool init = true;
 
@@ -87,9 +87,10 @@ namespace Tree_of_Life
             links = new ArrayList();
             rootNode = modele.getRootNode();
             this.AutoScroll = true;
-            
-            calculTree(rootNode, new Point(400, 1000));
-            translateTree(0-topNodeX+20, 0-topNodeY+20);
+
+            //calculTree(rootNode, new Point(400, 1000));
+            //translateTree(0-topNodeX+20, 0-topNodeY+20);
+            calcTree(rootNode);
             foreach (Modele.Node node in positions.Keys)
             {
                 createNode(node, positions[node].X, positions[node].Y);
@@ -115,10 +116,11 @@ namespace Tree_of_Life
             buttons.Clear();
             positions.Clear();
             links.Clear();
-            init = true;
-            calculTree(rootNode, new Point(400, 1000));
-            translateTree(0 - topNodeX + 20, 0 - topNodeY + 20);
 
+            init = true;
+            //calculTree(rootNode, new Point(400, 1000));
+            calcTree(rootNode);
+            //translateTree(0 - topNodeX + 20, 0 - topNodeY + 20);
             foreach (Modele.Node node in positions.Keys)
             {
                 createNode(node, positions[node].X, positions[node].Y);
@@ -170,13 +172,10 @@ namespace Tree_of_Life
 
             if ( (node.getChildren().Count > 0 && !node.isClusterNode()) || node == rootNode)
                 {
-                    //Debug.Print("NOM : " + node.getName() + " is NOT a cluster !!");
                     int depart = p.X - (node.getChildren().Count - 1) * espaceNodeX / 2;
 
                     foreach (Modele.Node child in node.getChildren())
                     {
-                        //Debug.Print("   CHILD : " + child.getName());
-                        //calculate the position of the child
                         Point childPos = new Point(depart, p.Y - espaceNodeY);
 
                     //Add the link to the link list
@@ -191,8 +190,9 @@ namespace Tree_of_Life
                     }
 
                 }
-                //else Debug.Print("NOM : " + node.getName() + " is a cluster....");
             }
+
+        private int maxX = 0;
 
             /* On va d'abord tt en haut de l'arbre
              * p sera la position du noeud en haut à gauche de l'arbre
@@ -200,31 +200,53 @@ namespace Tree_of_Life
              * puis on prend le premier enfant et le dernier et on fait la moyenne des positiosn
              * on pourra par la suite faire une translation sur tous les noeuds de l'arbre pour le centrer
              */
-            public void calculTree2(Modele.Node node, Point p)
+            public bool calculPos(Modele.Node node, int y)
             {
                 if (!positions.ContainsKey(node)) { // si le noeud n'est pas encore dans l'arbre
-                    if (node.isClusterNode() || node.getChildren().Count == 0) //si le noeud est un cluster ou une leaf
+                    if ((node.isClusterNode() && node!=rootNode) || node.getChildren().Count == 0) //si le noeud est un cluster ou une leaf
                     {
-                        positions.Add(node, p);
+                        maxX = maxX + tailleNode + espaceNodeX;
+                        positions.Add(node, new Point (maxX, y));
+                        return true;
                     }
-                    else {
-                        int x = p.X;
+                    else
+                    {
+                        ArrayList childPos = new ArrayList();
                         foreach (Modele.Node child in node.getChildren())
                         {
                             if (!positions.ContainsKey(child))
                             {
-                                calculTree2(child, new Point(x, p.Y - espaceNodeY));
-                                x = positions[child].X + espaceNodeX;
+                                //Point point = new Point(x + espaceNodeX+tailleNode, p.Y + espaceNodeY+tailleNode);
+                                bool b = calculPos(child, y+espaceNodeY+tailleNode);
+                                if (b)
+                                {
+                                childPos.Add(positions[child]);
+                                }
                             }
                         }
-                        positions.Add(node, new Point((x+p.X-espaceNodeX) / 2, p.Y));
+                        // Tout ça parce qu'il y a des boucles
+                        Point source = new Point((((Point)childPos[0]).X + ((Point)childPos[childPos.Count - 1]).X) / 2, y); 
+                        positions.Add(node, source);
 
+                        foreach (Point target in childPos){
+                            links.Add(new Link(source, target));
+                        }
+                        return true;
                     }
                 }
+            return false;
             }
 
 
-            public void translateTree(int x, int y)
+        public void calcTree(Node root)
+        {
+            maxX = 0;
+            calculPos(root,20);
+            //translateTree(200,200);
+        }
+       
+
+        public void translateTree(int x, int y)
             {
                 //translate all the nodes
                 foreach (Modele.Node node in positions.Keys)
@@ -260,10 +282,16 @@ namespace Tree_of_Life
                     Point source = link.getSource();
                     Point target = link.getTarget();
 
+                    //Point p1 = new Point(source.X + tailleNode / 2, source.Y);
+                    //Point p2 = new Point(p1.X, source.Y - (espaceNodeY - tailleNode) / 2);
+                    //Point p3 = new Point(target.X + tailleNode / 2, p2.Y);
+                    //Point p4 = new Point(p3.X, target.Y + tailleNode);
+
                     Point p1 = new Point(source.X + tailleNode / 2, source.Y);
-                    Point p2 = new Point(p1.X, source.Y - (espaceNodeY - tailleNode) / 2);
-                    Point p3 = new Point(target.X + tailleNode / 2, p2.Y);
-                    Point p4 = new Point(p3.X, target.Y + tailleNode);
+                    Point p2 = new Point(source.X + tailleNode / 2, source.Y + tailleNode +espaceNodeY/2);
+                    Point p3 = new Point(target.X + tailleNode / 2, target.Y - espaceNodeY / 2);
+                    Point p4 = new Point(target.X + tailleNode / 2, target.Y);
+
 
                     pevent.Graphics.DrawLine(Pens.Black, p1, p2);
                     pevent.Graphics.DrawLine(Pens.Black, p2, p3);
