@@ -406,7 +406,7 @@ namespace Tree_of_Life
 
             //Nom de l'espèce lorsque l'on clique
             this.especeCliquée = new Label();
-                this.especeCliquée.Location = new System.Drawing.Point(start+zoneMenuWidth/5, 25+zoneMenuHeight/5);
+                this.especeCliquée.Location = new System.Drawing.Point(start+50, 15+zoneMenuHeight/5);
                 this.especeCliquée.Font = new Font("Arial", 12, FontStyle.Bold);
                 this.especeCliquée.AutoSize = true;
                 this.especeCliquée.Size = new System.Drawing.Size(200, 20);
@@ -414,7 +414,7 @@ namespace Tree_of_Life
 
                 //Lien du site lorsque l'on clique sur une espèce
                 this.website = new LinkLabel();
-                this.website.Location = new System.Drawing.Point(start + 100, 60 + zoneMenuHeight / 5);
+                this.website.Location = new System.Drawing.Point(start + 50, 60 + zoneMenuHeight / 5);
                 this.website.Font = new Font("Arial", 12);
                 this.website.AutoSize = true;
                 this.website.Size = new System.Drawing.Size(200, 20);
@@ -423,22 +423,22 @@ namespace Tree_of_Life
                 //plus tard : image venant du site TODO ----------------------------------------------------------------
 
                 this.extinct = new Label();
-                this.extinct.Location = new System.Drawing.Point(start + 100, 120 + zoneMenuHeight / 5);
+                this.extinct.Location = new System.Drawing.Point(start + 50, 120 + zoneMenuHeight / 5);
                 this.extinct.Font = new Font("Arial", 12);
                 this.extinct.AutoSize = true;
                 this.extinct.Size = new System.Drawing.Size(200, 20);
                 this.Controls.Add(this.extinct);
 
                 this.phylesis = new Label();
-                this.phylesis.Location = new System.Drawing.Point(start + 100, 180 + zoneMenuHeight / 5);
+                this.phylesis.Location = new System.Drawing.Point(start + 50, 180 + zoneMenuHeight / 5);
                 this.phylesis.Font = new Font("Arial", 12);
                 this.phylesis.AutoSize = true;
                 this.phylesis.Size = new System.Drawing.Size(200, 20);
                 this.Controls.Add(this.phylesis);
 
                 this.nodePath = new Panel();
-                this.nodePath.Location = new System.Drawing.Point(start + 100, 250 + zoneMenuHeight / 5);
-                this.nodePath.Size = new System.Drawing.Size(330, 50);
+                this.nodePath.Location = new System.Drawing.Point(start + 50, 250 + zoneMenuHeight / 5);
+                this.nodePath.Size = new System.Drawing.Size(2 * zoneMenuWidth / 5, 50);
                 this.nodePath.AutoScroll = true;
                 this.Controls.Add(nodePath);
 
@@ -472,7 +472,7 @@ namespace Tree_of_Life
             if (selectedNode != null)
             {
                 ArrayList revPath = selectedNode.getPath();
-                //revPath.Reverse();
+                revPath.Reverse();
 
                 foreach (int id in revPath)
                 {
