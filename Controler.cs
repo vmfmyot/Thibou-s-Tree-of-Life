@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using static System.ComponentModel.Design.ObjectSelectorEditor;
+using static Tree_of_Life.Modele;
 
 namespace Tree_of_Life
 {
@@ -194,6 +195,28 @@ namespace Tree_of_Life
                     menu.extinct.ForeColor = Color.Green;
                 }
                 menu.phylesis.Text = "Phylesis : " + node.getPhylesis();
+            }
+        }
+
+        public class PathLabel : Label
+        {
+            private ZoneMenu menu;
+            private ZoneArbre arbre;
+            private Node node;
+
+            public PathLabel(Node n, ZoneMenu m, ZoneArbre a)
+            {
+                this.menu = m; this.arbre = a;
+                this.node = n;
+                this.Text = n.getName();
+                this.Click += Label_Click;
+            }
+            
+
+            private void Label_Click(object sender, EventArgs e)
+            {
+                menu.setSelectedNode(node);
+                arbre.setRootNode(node);
             }
         }
     }     

@@ -91,7 +91,7 @@ namespace Tree_of_Life
             bool isCluster;
 
             private Color shade;
-            private ArrayList path; //path to the root node
+            private ArrayList path; //path to the root node with the IDs
 
             //Confidence in the placement of the node (in the tree)
             public enum Confidence { CONFIDENT, NOTCONFIDENT, UNKNOWN };
@@ -217,7 +217,7 @@ namespace Tree_of_Life
 
             public void setPath(Node n)
             {
-                this.path.Add(n.getName());
+                this.path.Add(n.getId());
                 if (n.getParentNode() != null)
                 {
                     this.setPath(n.getParentNode());

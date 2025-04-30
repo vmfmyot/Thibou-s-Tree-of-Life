@@ -5,6 +5,7 @@ using static Tree_of_Life.Modele;
 using System.Configuration;
 using System.Drawing.Drawing2D;
 using System.Security.Policy;
+using System.Drawing.Text;
 
 namespace Tree_of_Life
 {
@@ -29,7 +30,7 @@ namespace Tree_of_Life
             this.Controls.Add(arbre);
             // Set the form's properties
             //this.Text = "Tree of Life";
-            ZoneMenu menu = new ZoneMenu(modele, this.Width*2/3, this.Height, this.Width*1/3);
+            ZoneMenu menu = new ZoneMenu(modele, this.Width*2/3, this.Height, this.Width*1/3, arbre);
             this.Controls.Add(menu);
             NodeButton.setZoneArbre(arbre);
             NodeButton.setZoneMenu(menu);
@@ -361,6 +362,7 @@ namespace Tree_of_Life
         public class ZoneMenu : Control
         {
             private Modele modele;
+            private ZoneArbre arbre;
             public Label especeCliquée;
             public LinkLabel website;
             public Button image;
@@ -370,17 +372,18 @@ namespace Tree_of_Life
             public Panel nodePath;
 
 
-        private Modele.Node selectedNode;
+            public Modele.Node selectedNode;
 
 
-        //tailles stockées au cas où
-        public int zoneMenuWidth;
-        public int zoneMenuHeight;
-        public int start;
+            //tailles stockées au cas où
+            public int zoneMenuWidth;
+            public int zoneMenuHeight;
+            public int start;
 
-        public ZoneMenu(Modele modele, int w, int h, int start) : base()
+
+        public ZoneMenu(Modele modele, int w, int h, int start, ZoneArbre a) : base()
             {
-                this.modele = modele;
+                this.modele = modele; this.arbre = a;
                 this.zoneMenuWidth = w; this.zoneMenuHeight = h;
                 this.start = start;
 
@@ -416,17 +419,17 @@ namespace Tree_of_Life
 
                 this.nodePath = new Panel();
                 this.nodePath.Location = new System.Drawing.Point(start + 100, 250 + zoneMenuHeight / 5);
-                this.nodePath.Size = new System.Drawing.Size(200, 200);
-                this.nodePath.AutoSize = true;
+                this.nodePath.Size = new System.Drawing.Size(330, 50);
+                this.nodePath.AutoScroll = true;
                 this.Controls.Add(nodePath);
 
-            this.selectedNode = this.modele.getRootNode();
+                this.selectedNode = this.modele.getRootNode();
 
 
-            //this.StartPosition = FormStartPosition.Manual;
-            //this.FormBorderStyle = FormBorderStyle.None;
-            //this.Location = new System.Drawing.Point(1000, 0);
-            this.Location = new System.Drawing.Point(start, 0);
+                //this.StartPosition = FormStartPosition.Manual;
+                //this.FormBorderStyle = FormBorderStyle.None;
+                //this.Location = new System.Drawing.Point(1000, 0);
+                this.Location = new System.Drawing.Point(start, 0);
                 //this.Size = new System.Drawing.Size(400, 800);
                 this.Size = new System.Drawing.Size(w, h);
 
@@ -438,27 +441,50 @@ namespace Tree_of_Life
         public void setSelectedNode(Modele.Node n)
         {
             selectedNode = n;
+            nodePath.Controls.Clear();
+            printPath(start, nodePath);
         }
 
         public void printPath(int start, Panel pan)
         {
-            int initial = start + 100;
+            int initial = 0;
             if (selectedNode != null)
             {
-                foreach (string s in selectedNode.getPath())
+                ArrayList revPath = selectedNode.getPath();
+                //revPath.Reverse();
+
+                foreach (int id in revPath)
                 {
-                    Label l = new Label();
-                    l.Location = new System.Drawing.Point(initial, 250 + zoneMenuHeight / 5);
+                    Label dash = new Label();
+                    dash.Location = new System.Drawing.Point(initial, 0);
+                    dash.Font = new Font("Arial", 12);
+                    dash.AutoSize = true;
+                    dash.Size = new System.Drawing.Size(200, 20);
+                    dash.Text = "/";
+                    pan.Controls.Add(dash);
+
+                    initial += 15;
+
+
+                    PathLabel l = new PathLabel(modele.getNodes()[id], this, this.arbre);
+                    l.Location = new System.Drawing.Point(initial, 0);
                     l.Font = new Font("Arial", 12);
                     l.AutoSize = true;
                     l.Size = new System.Drawing.Size(200, 20);
-                    l.Text = "/"+s;
+                    //l.Text = modele.getNodes()[id].getName();
+
                     pan.Controls.Add(l);
-                    initial += 50;
+                    initial += 150;
                 }
+
             }
         }
-    }
+
+        public void MouseWheel() { }
+
+        
+        
+        } //FIN ZONE MENU ------------------------------------------------------------------------------------
     
 
 
