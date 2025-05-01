@@ -19,18 +19,12 @@ namespace Tree_of_Life
             Modele modele = new Modele();
             // Get the root node
             Modele.Node rootNode = modele.getRootNode();
-            // Display the root node's name
-            //MessageBox.Show("Root Node: " + rootNode.getName());
-
-            //this.StartPosition = FormStartPosition.Manual;
-            //this.Bounds = new Rectangle(1, 1, Screen.PrimaryScreen.Bounds.X, Screen.PrimaryScreen.Bounds.Y+10) ;
-            //this.FormBorderStyle = FormBorderStyle.None;
+            
 
             // Initialize the screen
             ZoneArbre arbre = new ZoneArbre(modele, this.Width*2/3, this.Height);
             this.Controls.Add(arbre);
-            // Set the form's properties
-            //this.Text = "Tree of Life";
+
             ZoneMenu menu = new ZoneMenu(modele, this.Width*2/3, this.Height, this.Width*1/3, arbre);
             this.Controls.Add(menu);
             NodeButton.setZoneArbre(arbre);
@@ -55,6 +49,7 @@ namespace Tree_of_Life
         {
             private Modele modele;
             public static Dictionary<Modele.Node, Point> positions;
+            public static Dictionary<Node, System.Windows.Forms.Button> buttons = new Dictionary<Node, System.Windows.Forms.Button>();
             public static ArrayList links;
 
             public static Modele.Node rootNode;
@@ -73,7 +68,6 @@ namespace Tree_of_Life
 
             public static bool init = true;
 
-            public static ArrayList buttons = new ArrayList();
 
 
         public ZoneArbre(Modele modele, int w, int h) : base()
@@ -89,14 +83,12 @@ namespace Tree_of_Life
             rootNode = modele.getRootNode();
             this.AutoScroll = true;
 
-            //calculTree(rootNode, new Point(400, 1000));
-            //translateTree(0-topNodeX+20, 0-topNodeY+20);
+
             calcTree(rootNode);
             foreach (Modele.Node node in positions.Keys)
             {
                 createNode(node, positions[node].X, positions[node].Y);
             }
-            //calculTree2(rootNode, new Point(0, 1000));
         }
 
        
@@ -104,24 +96,17 @@ namespace Tree_of_Life
         public void setRootNode(Modele.Node n)
         {
             rootNode= n;
-            foreach (Control c in buttons)
+            foreach ((Node node, Control c) in buttons)
             {
                 Controls.Remove(c);
                 c.Dispose();
-            }
-            foreach (Link l in links)
-            {
-                Controls.Remove(l);
-                l.Dispose();
             }
             buttons.Clear();
             positions.Clear();
             links.Clear();
 
             init = true;
-            //calculTree(rootNode, new Point(400, 1000));
             calcTree(rootNode);
-            //translateTree(0 - topNodeX + 20, 0 - topNodeY + 20);
             foreach (Modele.Node node in positions.Keys)
             {
                 createNode(node, positions[node].X, positions[node].Y);
@@ -143,57 +128,22 @@ namespace Tree_of_Life
                 {
                     ClusterButton cn = new ClusterButton(node, new Point(x, y));
                     Controls.Add(cn);
-                    buttons.Add(cn);
+                buttons.Add(node, cn);
                 }
                 else
                 {
                     NodeButton nb = new NodeButton(node, new Point(x, y));
                     Controls.Add(nb);
-                    buttons.Add(nb);
+                    buttons.Add(node, nb);
                 }
             }
 
            
 
 
-            /*
-             * Calcule la position de chaque noeud de l'arbre
-             * @param node : le noeud à partir duquel on calcule la position
-             * @param p : la position du noeud
-             */
-            public void calculTree(Modele.Node node, Point p)
-            {
-                if (positions.ContainsKey(node))
-                    positions[node] = p;
-                else
-                    positions.Add(node, p);
+            
 
-            if (p.X < topNodeX) topNodeX = p.X; 
-            if (p.Y < topNodeY) topNodeY = p.Y;
-
-            if ( (node.getChildren().Count > 0 && !node.isClusterNode()) || node == rootNode)
-                {
-                    int depart = p.X - (node.getChildren().Count - 1) * espaceNodeX / 2;
-
-                    foreach (Modele.Node child in node.getChildren())
-                    {
-                        Point childPos = new Point(depart, p.Y - espaceNodeY);
-
-                    //Add the link to the link list
-
-                    Link l = new Link(p, childPos);
-                    links.Add(l);
-                    Controls.Add(l);
-
-                    //recursively calculate the tree for the child
-                    calculTree(child, childPos);
-                        depart += espaceNodeX;
-                    }
-
-                }
-            }
-
-        private int maxX = 0;
+            private int maxX = 0; //sert pour l'affichage
 
             /* On va d'abord tt en haut de l'arbre
              * p sera la position du noeud en haut à gauche de l'arbre
@@ -217,11 +167,11 @@ namespace Tree_of_Life
                         {
                             if (!positions.ContainsKey(child))
                             {
-                                //Point point = new Point(x + espaceNodeX+tailleNode, p.Y + espaceNodeY+tailleNode);
                                 bool b = calculPos(child, y+espaceNodeY+tailleNode);
                                 if (b)
                                 {
-                                childPos.Add(positions[child]);
+                                    childPos.Add(positions[child]);
+                                    links.Add(new Link(node, child));
                                 }
                             }
                         }
@@ -229,9 +179,6 @@ namespace Tree_of_Life
                         Point source = new Point((((Point)childPos[0]).X + ((Point)childPos[childPos.Count - 1]).X) / 2, y); 
                         positions.Add(node, source);
 
-                        foreach (Point target in childPos){
-                            links.Add(new Link(source, target));
-                        }
                         return true;
                     }
                 }
@@ -243,28 +190,10 @@ namespace Tree_of_Life
         {
             maxX = 0;
             calculPos(root,20);
-            //translateTree(200,200);
         }
        
 
-        public void translateTree(int x, int y)
-            {
-                //translate all the nodes
-                foreach (Modele.Node node in positions.Keys)
-                {
-                    Point p = positions[node];
-                    p.X += x;
-                    p.Y += y;
-                    positions[node] = p;
-                }
-                //translate all the links
-                foreach (Link link in links)
-                {
-                    link.translate(x, y);
-
-                //link.Location = new Point(source.X, source.Y);
-            }
-            }
+        
 
             /*
              * Redessine l'écran
@@ -279,14 +208,8 @@ namespace Tree_of_Life
                 //on dessine les liens
                 foreach (Link link in links)
                 {
-                    pevent.Graphics.TranslateTransform(this.AutoScrollPosition.X, this.AutoScrollPosition.Y);
-                    Point source = link.getSource();
-                    Point target = link.getTarget();
-
-                    //Point p1 = new Point(source.X + tailleNode / 2, source.Y);
-                    //Point p2 = new Point(p1.X, source.Y - (espaceNodeY - tailleNode) / 2);
-                    //Point p3 = new Point(target.X + tailleNode / 2, p2.Y);
-                    //Point p4 = new Point(p3.X, target.Y + tailleNode);
+                    Point source = buttons[link.getSource()].Location;
+                    Point target = buttons[link.getTarget()].Location;
 
                     Point p1 = new Point(source.X + tailleNode / 2, source.Y);
                     Point p2 = new Point(source.X + tailleNode / 2, source.Y + tailleNode +espaceNodeY/2);
@@ -306,38 +229,46 @@ namespace Tree_of_Life
 
         protected override void OnScroll(ScrollEventArgs se)
         {
-            init=true; //on redessine l'écran
+            base.OnScroll(se);
+            init = true;
+            Invalidate(); // Force le repaint pour redessiner les liens visibles
         }
 
-        //protected override void OnPaintBackground(PaintEventArgs pevent)
-        //{
-        //    //base.OnPaintBackground(e);
-        //    //on efface l'aire de dessin
-        //    pevent.Graphics.Clear(Color.White);
-        //    foreach ((Point, Point) link in links)
-        //    {
-        //        drawLink(pevent, link.Item1, link.Item2);
-        //    }
-        //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
         /* Sous-classe : links (éléments graphiques)
          */
-        public class Link : Control
+        public class Link 
         {
             
             /*************
              * ATTRIBUTS *
              *************/
-            private Point source;
-            private Point target;
+            private Node source;
+            private Node target;
 
 
             /****************
              * CONSTRUCTEUR *
              ****************/
-            public Link(Point source, Point target)
+            public Link(Node source, Node target)
             {
                 this.source = source;
                 this.target = target;
@@ -346,42 +277,29 @@ namespace Tree_of_Life
             /**************
              * ACCESSEURS *
              **************/
-            public Point getSource()
+            public Node getSource()
             {
                 return source;
             }
-            public Point getTarget()
+            public Node getTarget()
             {
                 return target;
             }
 
-            protected override void OnPaint(PaintEventArgs pevent)
-            {
-                base.OnPaint(pevent);
-
-                Point p1 = new Point(source.X + tailleNode / 2, source.Y);
-                Point p2 = new Point(p1.X, source.Y - (espaceNodeY - tailleNode) / 2);
-                Point p3 = new Point(target.X + tailleNode / 2, p2.Y);
-                Point p4 = new Point(p3.X, target.Y + tailleNode);
-
-                pevent.Graphics.DrawLine(Pens.Black, p1, p2);
-                pevent.Graphics.DrawLine(Pens.Black, p2, p3);
-                pevent.Graphics.DrawLine(Pens.Black, p3, p4);
-            }
-
-            public void translate(int x, int y)
-            {
-                source.X += x;
-                source.Y += y;
-                target.X += x;
-                target.Y += y;
-            }
-
         }
 
 
 
         }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -419,15 +337,10 @@ namespace Tree_of_Life
                 //Création de la barre de recherche
                 searchBox = new SearchBox(modele, this, new Point(start + 50, 105));
                 searchBox.PlaceholderText = "Rechercher une espèce";
-                //searchBox.Location = new Point(start + 50, 125);
-                //searchBox.setLoc(start + 50, 35);
                 searchBox.Size = new Size(2*zoneMenuWidth/5, 30);
                 searchBox.setSiz(2 * zoneMenuWidth / 5, 30);
                 this.Controls.Add(searchBox);
-                //Auto-complétion lors de la recherche    
-                //searchBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
-                //searchBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-                //searchBox.AutoCompleteCustomSource = modele.getSpeciesList(); //ERREUR : System.InvalidCastException : Interface non enregistrée
+                
 
 
             //Nom de l'espèce lorsque l'on clique
@@ -469,15 +382,9 @@ namespace Tree_of_Life
                 this.Controls.Add(nodePath);
 
                 
-                //selectedNode par défaut pour éviter les erreurs de NULL
                 this.selectedNode = this.modele.getRootNode();
 
-
-                //this.StartPosition = FormStartPosition.Manual;
-                //this.FormBorderStyle = FormBorderStyle.None;
-                //this.Location = new System.Drawing.Point(1000, 0);
                 this.Location = new System.Drawing.Point(start, 0);
-                //this.Size = new System.Drawing.Size(400, 800);
                 this.Size = new System.Drawing.Size(w, h);
 
 
@@ -528,7 +435,6 @@ namespace Tree_of_Life
                     l.Font = new Font("Arial", 12);
                     l.AutoSize = true;
                     l.Size = new System.Drawing.Size(200, 20);
-                    //l.Text = modele.getNodes()[id].getName();
 
                     pan.Controls.Add(l);
                     initial += l.Size.Width;
