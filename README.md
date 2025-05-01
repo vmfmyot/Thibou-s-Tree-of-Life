@@ -1,7 +1,7 @@
 
 # Thibou's Tree of Life
 
-3rd year University project for an Advanced Interactive Interfaces Programming class. Using Kaggle's Tree of Life dataset of 36000 species organized in nodes and links, we made a small phylogenetic tree with an educational purpose aimed towards children and teenagers alike.
+3rd year University project for an Advanced Interactive Interfaces Programming class. Using [Kaggle's Tree of Life dataset](https://www.kaggle.com/datasets/konivat/tree-of-life?resource=download) of approximately 36000 species organized in nodes and links, we made a small phylogenetic tree with an educational purpose aimed towards children and teenagers alike.
 
 ## Authors
 
