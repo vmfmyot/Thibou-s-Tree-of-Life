@@ -426,6 +426,26 @@ namespace Tree_of_Life
                 totalNb.Location = new Point(start + 50, zoneMenuHeight / 5 + 450);
                 Controls.Add(totalNb);
 
+                //label panneau
+                ArrayList noms = ["Rattus group", "Strigiformes", "Corvoidea", "Giraffidae", "Cetacea"];
+                ArrayList points = [new Point(start+65, zoneMenuHeight - 255), 
+                                    new Point(start+65, zoneMenuHeight - 210), 
+                                    new Point(start+110, zoneMenuHeight - 170), 
+                                    new Point(start+75, zoneMenuHeight - 130),
+                                    new Point(start+110, zoneMenuHeight - 90),];
+                for (int i = 0; i < noms.Count; i++)
+                {
+                    PathLabel label = new PathLabel(modele.getSpeciesList()[(string)noms[i]], this, arbre);
+                    label.AutoSize = true;
+                    label.Text = (string) noms[i];
+                    label.BackColor = Color.Transparent;
+                    label.Font = new Font("Comic Sans MS", 9, FontStyle.Bold);
+                    label.Location = (Point) points[i];
+                    Controls.Add((label));
+                }
+
+
+
 
         }
 
@@ -440,13 +460,19 @@ namespace Tree_of_Life
         {
             pevent.Graphics.DrawLine(new Pen(Color.DarkGreen, 3), new PointF(start, 0), new Point(start, zoneMenuHeight));
             pevent.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(255, 200, 255, 200)), new Rectangle(new Point(start+45, 90 + zoneMenuHeight / 5), new Size(2 * zoneMenuWidth / 5 +10 , 245)));
+            
             Image i = Image.FromFile("../../../Resources/latest.png");
+            pevent.Graphics.DrawImage(i, new Point(zoneMenuWidth - 310, zoneMenuHeight - 300));
+
+
+            Image sign = Image.FromFile("../../../Resources/sign.png");
+            pevent.Graphics.DrawImage(sign, new Point(start, zoneMenuHeight - 300));
+
 
             pevent.Graphics.FillRectangle(new SolidBrush(Color.Brown), new Rectangle(new Point(start + 40, zoneMenuHeight / 5 + 375), new Size(2 * zoneMenuWidth / 5 + 15, 115)));
             pevent.Graphics.FillRectangle(new SolidBrush(Color.DarkGreen), new Rectangle(new Point(start + 45, zoneMenuHeight / 5 + 380), new Size(2 * zoneMenuWidth / 5 + 5, 105)));
 
 
-            pevent.Graphics.DrawImage(i, new Point(zoneMenuWidth-310,zoneMenuHeight-300));
 
         }
 
@@ -495,6 +521,22 @@ namespace Tree_of_Life
         }
 
 
+        private void openLink(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = ((Label)sender).Text,
+                    UseShellExecute = true // Required for modern .NET versions
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open the link: {ex.Message}");
+            }
+        }
+
         /*
          * Met à jour les infos du noeud cliqué dans ZoneMenu
          * @param Node node
@@ -515,9 +557,10 @@ namespace Tree_of_Life
 
             if (node.hasWebsiteNode())
             {
-                website.Text = "http://tolweb.org/$" + node.getName() + "/$" + node.getId();
+                website.Text = "http://tolweb.org/" + node.getName() + "/" + node.getId();
                 website.ActiveLinkColor = Color.Blue;
                 website.ForeColor = Color.Blue;
+                website.Click += openLink;
             }
             else
             {

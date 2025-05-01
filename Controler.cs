@@ -119,7 +119,7 @@ namespace Tree_of_Life
                 using (GraphicsPath GraphPath = GetRoundPath(Rect, ZoneArbre.tailleNode))
                 {
                     this.Region = new Region(GraphPath);
-                    using (Pen pen = new Pen(Color.Orange, 1.75f))
+                    using (Pen pen = new Pen(Color.LightGray, 1.75f))
                     {
                         pen.Alignment = PenAlignment.Inset;
                         e.Graphics.DrawPath(pen, GraphPath);
