@@ -38,6 +38,7 @@
             ClientSize = new Size(1582, 953);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form1";
+            Text = "Thibou's Tree of Life";
             Load += Form1_Load;
             ResumeLayout(false);
         }

@@ -7,6 +7,8 @@ using System.Drawing.Drawing2D;
 using System.Security.Policy;
 using System.Drawing.Text;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace Tree_of_Life
 {
@@ -19,6 +21,7 @@ namespace Tree_of_Life
             Modele modele = new Modele();
             // Get the root node
             Modele.Node rootNode = modele.getRootNode();
+
             
 
             // Initialize the screen
@@ -37,7 +40,6 @@ namespace Tree_of_Life
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
         }
     }
         
@@ -77,7 +79,7 @@ namespace Tree_of_Life
             //this.Size = new System.Drawing.Size(1000, 800);
             this.zoneArbreWidth = w; this.zoneArbreHeight = h;
             this.Size = new System.Drawing.Size(w, h);
-            this.BackColor = Color.White;
+            this.BackColor = Color.Beige;
             positions = new Dictionary<Modele.Node, Point>();
             links = new ArrayList();
             rootNode = modele.getRootNode();
@@ -204,7 +206,7 @@ namespace Tree_of_Life
             if (init)
             {
                 //on efface l'aire de dessin
-                pevent.Graphics.Clear(Color.White);
+                pevent.Graphics.Clear(Color.Beige);
                 //on dessine les liens
                 foreach (Link link in links)
                 {
@@ -312,6 +314,8 @@ namespace Tree_of_Life
             public LinkLabel website;
             public Label extinct;
             public Label phylesis;
+            public Label extinctNb;
+            public Label totalNb;
 
             public Panel nodePath;
 
@@ -343,8 +347,9 @@ namespace Tree_of_Life
                 
 
 
-            //Nom de l'espèce lorsque l'on clique
+                //Nom de l'espèce lorsque l'on clique
                 this.especeCliquée = new PathLabel(this, this.arbre);
+                this.especeCliquée.BackColor = Color.FromArgb(255, 200, 255, 200);
                 this.especeCliquée.Location = new System.Drawing.Point(start+50, 95+zoneMenuHeight/5);
                 this.especeCliquée.Font = new Font("Arial", 12, FontStyle.Bold);
                 this.especeCliquée.AutoSize = true;
@@ -353,6 +358,7 @@ namespace Tree_of_Life
 
                 //Lien du site lorsque l'on clique sur une espèce
                 this.website = new LinkLabel();
+                this.website.BackColor = Color.FromArgb(255, 200, 255, 200);
                 this.website.Location = new System.Drawing.Point(start + 50, 155 + zoneMenuHeight / 5);
                 this.website.Font = new Font("Arial", 12);
                 this.website.AutoSize = true;
@@ -362,6 +368,7 @@ namespace Tree_of_Life
                 //plus tard : image venant du site TODO ----------------------------------------------------------------
 
                 this.extinct = new Label();
+                this.extinct.BackColor = Color.FromArgb(255, 200, 255, 200);
                 this.extinct.Location = new System.Drawing.Point(start + 50, 185 + zoneMenuHeight / 5);
                 this.extinct.Font = new Font("Arial", 12);
                 this.extinct.AutoSize = true;
@@ -369,6 +376,7 @@ namespace Tree_of_Life
                 this.Controls.Add(this.extinct);
 
                 this.phylesis = new Label();
+            this.phylesis.BackColor = Color.FromArgb(255, 200, 255, 200);
                 this.phylesis.Location = new System.Drawing.Point(start + 50, 215 + zoneMenuHeight / 5);
                 this.phylesis.Font = new Font("Arial", 12);
                 this.phylesis.AutoSize = true;
@@ -376,6 +384,7 @@ namespace Tree_of_Life
                 this.Controls.Add(this.phylesis);
 
                 this.nodePath = new Panel();
+                this.nodePath.BackColor = Color.FromArgb(255, 200, 255, 200);
                 this.nodePath.Location = new System.Drawing.Point(start + 50, 275 + zoneMenuHeight / 5);
                 this.nodePath.Size = new System.Drawing.Size(2 * zoneMenuWidth / 5, 50);
                 this.nodePath.AutoScroll = true;
@@ -387,16 +396,58 @@ namespace Tree_of_Life
                 this.Location = new System.Drawing.Point(start, 0);
                 this.Size = new System.Drawing.Size(w, h);
 
+                this.BackColor = Color.LightGreen;
 
 
-            this.BackColor = Color.LightGray;
-            }
+                //Infos de Thibou
+                Label l = new Label();
+                l.Text = "Quelques chiffres : ";
+                l.ForeColor = Color.White;
+                l.BackColor = Color.DarkGreen;
+                l.Size = new System.Drawing.Size(200, 30);
+                l.Font = new Font("Comic Sans MS", 12, FontStyle.Bold);
+                l.Location = new Point(start + 150, zoneMenuHeight / 5 + 380);
+                Controls.Add(l);
+
+                extinctNb= new Label();
+                extinctNb.AutoSize = true;
+                extinctNb.BackColor = Color.DarkGreen; 
+                extinctNb.ForeColor = Color.White;
+                extinctNb.Font = new Font("Comic Sans MS", 12);
+                extinctNb.Location = new Point(start + 50, zoneMenuHeight / 5 + 420);
+                Controls.Add(extinctNb);
+
+                totalNb = new Label();
+                totalNb.AutoSize = true;
+                totalNb.BackColor = Color.DarkGreen;
+                totalNb.ForeColor = Color.White;
+                totalNb.Font = new Font("Comic Sans MS", 12);
+                totalNb.Font = new Font("Comic Sans MS", 12);
+                totalNb.Location = new Point(start + 50, zoneMenuHeight / 5 + 450);
+                Controls.Add(totalNb);
+
+
+        }
 
         public void setSelectedNode(Modele.Node n)
         {
             selectedNode = n;
             nodePath.Controls.Clear();
             printPath(start, nodePath);
+        }
+
+        protected override void OnPaint(PaintEventArgs pevent)
+        {
+            pevent.Graphics.DrawLine(new Pen(Color.DarkGreen, 3), new PointF(start, 0), new Point(start, zoneMenuHeight));
+            pevent.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(255, 200, 255, 200)), new Rectangle(new Point(start+45, 90 + zoneMenuHeight / 5), new Size(2 * zoneMenuWidth / 5 +10 , 245)));
+            Image i = Image.FromFile("../../../Resources/latest.png");
+
+            pevent.Graphics.FillRectangle(new SolidBrush(Color.Brown), new Rectangle(new Point(start + 40, zoneMenuHeight / 5 + 375), new Size(2 * zoneMenuWidth / 5 + 15, 115)));
+            pevent.Graphics.FillRectangle(new SolidBrush(Color.DarkGreen), new Rectangle(new Point(start + 45, zoneMenuHeight / 5 + 380), new Size(2 * zoneMenuWidth / 5 + 5, 105)));
+
+
+            pevent.Graphics.DrawImage(i, new Point(zoneMenuWidth-310,zoneMenuHeight-300));
+
         }
 
         public void printPath(int start, Panel pan)
@@ -451,6 +502,9 @@ namespace Tree_of_Life
         public void updateInfos(Node node)
         {
             setSelectedNode(node);
+            extinctNb.Text ="Nombre d'enfants éteints : "+ node.getNbExtinctChildren();
+            totalNb.Text = "Nombre d'enfants au total : "+ node.getNbChildren();
+
 
             //mise à jour du pathLabel du nom de l'espèce
             this.especeCliquée.Text = node.getName();
@@ -484,6 +538,8 @@ namespace Tree_of_Life
             }
 
             phylesis.Text = "Phylesis : " + node.getPhylesis();
+
+
         }
 
 
