@@ -68,38 +68,8 @@ namespace Tree_of_Life
 
             protected override void OnClick(EventArgs e)
             {
-                menu.setSelectedNode(node);
-                menu.especeCliquée.Text = node.getName();
-                menu.nodePath.Controls.Clear();
-                menu.printPath(menu.start, menu.nodePath);
-
-
-
-                if (node.hasWebsiteNode())
-                {
-                    menu.website.Text = "http://tolweb.org/$"+node.getName()+"/$"+node.getId();
-                    menu.website.ActiveLinkColor = Color.Blue;
-                    menu.website.ForeColor = Color.Blue;
-                }
-                else
-                {
-                    menu.website.Text = "Pas de site internet disponible";
-                    menu.website.ActiveLinkColor = Color.Black;
-                    menu.website.ForeColor = Color.Black;
-                }
+                menu.updateInfos(node);
                 
-                if(node.isExtinctNode())
-                {
-                    menu.extinct.Text = "Espèce éteinte";
-                    menu.extinct.ForeColor = Color.Red;
-                }
-                else
-                {
-                    menu.extinct.Text = "Espèce en vie";
-                    menu.extinct.ForeColor = Color.Green;
-                }
-
-                menu.phylesis.Text = "Phylesis : " + node.getPhylesis();
             }
         }
 
@@ -164,39 +134,12 @@ namespace Tree_of_Life
 
             protected override void OnClick(EventArgs e)
             {
-                menu.setSelectedNode(node);
                 arbre.setRootNode(node);
-
-                menu.especeCliquée.Text = node.getName();
-
-                menu.printPath(menu.start, menu.nodePath);
-
-                if (node.hasWebsiteNode())
-                {
-                    menu.website.Text = "http://tolweb.org/$" + node.getName() + "/$" + node.getId();
-                    menu.website.ActiveLinkColor = Color.Blue;
-                    menu.website.ForeColor = Color.Blue;
-                }
-                else
-                {
-                    menu.website.Text = "Pas de site internet disponible";
-                    menu.website.ActiveLinkColor = Color.Black;
-                    menu.website.ForeColor = Color.Black;
-                }
-
-                if (node.isExtinctNode())
-                {
-                    menu.extinct.Text = "Espèce éteinte";
-                    menu.extinct.ForeColor = Color.Red;
-                }
-                else
-                {
-                    menu.extinct.Text = "Espèce en vie";
-                    menu.extinct.ForeColor = Color.Green;
-                }
-                menu.phylesis.Text = "Phylesis : " + node.getPhylesis();
+                menu.updateInfos(node);
             }
         }
+
+
 
 
         /*
@@ -205,9 +148,20 @@ namespace Tree_of_Life
          */
         public class PathLabel : Label
         {
-            private ZoneMenu menu;
+            public ZoneMenu menu;
             private ZoneArbre arbre;
             private Node node;
+
+
+            public PathLabel(ZoneMenu menu, ZoneArbre arbre)
+            {
+                this.menu = menu;
+                this.arbre = arbre;
+                this.node = null;
+                this.Text = "";
+                this.Click += Label_Click;
+                this.Cursor = Cursors.Hand;
+            }
 
             public PathLabel(Node n, ZoneMenu m, ZoneArbre a)
             {
@@ -217,18 +171,20 @@ namespace Tree_of_Life
                 this.Click += Label_Click;
                 this.Cursor = Cursors.Hand;
             }
+
+            public void setNode(Node n) { this.node = n; }
             
 
             private void Label_Click(object sender, EventArgs e)
             {
-                menu.setSelectedNode(node);
+                menu.updateInfos(node);
                 arbre.setRootNode(node);
             }
         }
 
 
         /*
-         * Barre de recherche avec auto-complétion
+         * Barre de recherche
          * permettant de rechercher des espèces dans l'arbre
          */
         public class SearchBox : TextBox
@@ -236,14 +192,18 @@ namespace Tree_of_Life
             Modele modele;
             ArrayList resultLabels;
 
-            private Point loc;
-            private Size siz;
+            private Point loc; //localisation
+            private Size siz; //taille
 
             ZoneMenu menu;
 
-            public SearchBox(Modele m, ZoneMenu me) {
+            ArrayList filters;
+
+            public SearchBox(Modele m, ZoneMenu me, Point p) {
                 modele = m;
                 menu = me;
+
+                this.Location = p; this.loc = p;
 
                 this.TextChanged += search;
                 resultLabels = new ArrayList();
@@ -252,7 +212,46 @@ namespace Tree_of_Life
                     resultLabels.Add(new Label());
                 }
 
+                filters = new ArrayList();
+
+                CheckBox checkBoxHasLink = new CheckBox();
+                checkBoxHasLink.Text = "site web";
+                checkBoxHasLink.Click += setFilter;
+                checkBoxHasLink.Location = new Point(loc.X, 35);
+                checkBoxHasLink.Size = new Size(200, 30);
+                me.Controls.Add(checkBoxHasLink);
+
+                CheckBox checkBoxLeaf = new CheckBox();
+                checkBoxLeaf.Text = "feuille";
+                checkBoxLeaf.Click += setFilter;
+                checkBoxLeaf.Location = new Point(loc.X+250, 35);
+                checkBoxLeaf.Size = new Size(200, 30);
+                me.Controls.Add(checkBoxLeaf);
+
+                CheckBox checkBoxDead = new CheckBox();
+                checkBoxDead.Text = "espèces éteintes";
+                checkBoxDead.Click += setFilter;
+                checkBoxDead.Location = new Point(loc.X, 65);
+                checkBoxDead.Size = new Size(200, 30);
+                me.Controls.Add(checkBoxDead);
+
+                CheckBox checkBoxAlive = new CheckBox();
+                checkBoxAlive.Text = "espèces en vie";
+                checkBoxAlive.Click += setFilter;
+                checkBoxAlive.Location = new Point(loc.X + 250, 65);
+                checkBoxAlive.Size = new Size(200, 30);
+                me.Controls.Add(checkBoxAlive);
+
+
             }
+
+            private void setFilter(object sender, EventArgs e) {
+                CheckBox checkBox = ((CheckBox)sender);
+                if (filters.Contains(checkBox.Text)) filters.Remove(checkBox.Text);
+                else filters.Add(checkBox.Text);
+            }
+
+
 
             public void search(object sender, EventArgs e) 
             {
@@ -283,12 +282,28 @@ namespace Tree_of_Life
                 }
             }
 
+            public bool applyFilters(Node n)
+            {
+                foreach (string s in filters)
+                {
+                    switch (s)
+                    {
+                        case "site web": if (! n.hasWebsiteNode()) return false; break;
+                        case "feuille": if (! n.isLeafNode()) return false; break; ;
+                        case "espèces éteintes": if (!n.isExtinctNode()) return false; break; ;
+                        case "espèces en vie": if (n.isExtinctNode()) return false; break; ;
+                    }
+                }
+                return true;
+            }
+        
+
             public ArrayList getTop5(string text)
             {
                 ArrayList res = new ArrayList();
                 foreach((String s, Node n) in modele.getSpeciesList())
                 {
-                    if (s.Contains(text))
+                    if (s.Contains(text) && applyFilters(n))
                     {
                         res.Add(n);
                         if (res.Count >= 5) return res;

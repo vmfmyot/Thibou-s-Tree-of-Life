@@ -62,7 +62,7 @@ namespace Tree_of_Life
 
             foreach (Node n in this.nodes.Values)
             {
-                n.setPath(n);
+                //n.setPath(n);
                 n.countChildren(n);
                 n.setShade();
                 if (!speciesList.ContainsKey(n.getName()))
@@ -232,7 +232,7 @@ namespace Tree_of_Life
                 if (isCluster)
                 {
                     int green = Convert.ToInt32(200 * (1-Decimal.Divide(nbExtinctChildren, nbChildren)));
-                    Debug.Print("" + green);
+                    Debug.Print(name+" : " + green);
                     shade = Color.FromArgb(200, 0, green, 0);
                 }
                 else
@@ -246,14 +246,14 @@ namespace Tree_of_Life
                 }
             }
 
-            public void setPath(Node n)
-            {
-                this.path.Add(n.getId());
-                if (n.getParentNode() != null)
-                {
-                    this.setPath(n.getParentNode());
-                }
-            }
+            //public void setPath(Node n)
+            //{
+            //    this.path.Add(n.getId());
+            //    if (n.getParentNode() != null)
+            //    {
+            //        this.setPath(n.getParentNode());
+            //    }
+            //}
         }
 
 

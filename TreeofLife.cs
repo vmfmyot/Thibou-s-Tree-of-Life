@@ -6,6 +6,7 @@ using System.Configuration;
 using System.Drawing.Drawing2D;
 using System.Security.Policy;
 using System.Drawing.Text;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Tree_of_Life
 {
@@ -384,16 +385,13 @@ namespace Tree_of_Life
 
 
 
-
-
         //ECRAN MENU -------------------------------------------------------------------
         public class ZoneMenu : Control
         {
             private Modele modele;
             public ZoneArbre arbre;
-            public Label especeCliquée;
+            private PathLabel especeCliquée;
             public LinkLabel website;
-            public Button image;
             public Label extinct;
             public Label phylesis;
 
@@ -415,14 +413,14 @@ namespace Tree_of_Life
             {
                 this.modele = modele; this.arbre = a;
                 this.zoneMenuWidth = w; this.zoneMenuHeight = h;
-                this.start = start;
+                this.start = start; // début en x
 
 
                 //Création de la barre de recherche
-                searchBox = new SearchBox(modele, this);
+                searchBox = new SearchBox(modele, this, new Point(start + 50, 105));
                 searchBox.PlaceholderText = "Rechercher une espèce";
-                searchBox.Location = new Point(start + 50, 35);
-                searchBox.setLoc(start + 50, 35);
+                //searchBox.Location = new Point(start + 50, 125);
+                //searchBox.setLoc(start + 50, 35);
                 searchBox.Size = new Size(2*zoneMenuWidth/5, 30);
                 searchBox.setSiz(2 * zoneMenuWidth / 5, 30);
                 this.Controls.Add(searchBox);
@@ -433,8 +431,8 @@ namespace Tree_of_Life
 
 
             //Nom de l'espèce lorsque l'on clique
-            this.especeCliquée = new Label();
-                this.especeCliquée.Location = new System.Drawing.Point(start+50, 15+zoneMenuHeight/5);
+                this.especeCliquée = new PathLabel(this, this.arbre);
+                this.especeCliquée.Location = new System.Drawing.Point(start+50, 95+zoneMenuHeight/5);
                 this.especeCliquée.Font = new Font("Arial", 12, FontStyle.Bold);
                 this.especeCliquée.AutoSize = true;
                 this.especeCliquée.Size = new System.Drawing.Size(200, 20);
@@ -442,7 +440,7 @@ namespace Tree_of_Life
 
                 //Lien du site lorsque l'on clique sur une espèce
                 this.website = new LinkLabel();
-                this.website.Location = new System.Drawing.Point(start + 50, 60 + zoneMenuHeight / 5);
+                this.website.Location = new System.Drawing.Point(start + 50, 155 + zoneMenuHeight / 5);
                 this.website.Font = new Font("Arial", 12);
                 this.website.AutoSize = true;
                 this.website.Size = new System.Drawing.Size(200, 20);
@@ -451,21 +449,21 @@ namespace Tree_of_Life
                 //plus tard : image venant du site TODO ----------------------------------------------------------------
 
                 this.extinct = new Label();
-                this.extinct.Location = new System.Drawing.Point(start + 50, 120 + zoneMenuHeight / 5);
+                this.extinct.Location = new System.Drawing.Point(start + 50, 185 + zoneMenuHeight / 5);
                 this.extinct.Font = new Font("Arial", 12);
                 this.extinct.AutoSize = true;
                 this.extinct.Size = new System.Drawing.Size(200, 20);
                 this.Controls.Add(this.extinct);
 
                 this.phylesis = new Label();
-                this.phylesis.Location = new System.Drawing.Point(start + 50, 180 + zoneMenuHeight / 5);
+                this.phylesis.Location = new System.Drawing.Point(start + 50, 215 + zoneMenuHeight / 5);
                 this.phylesis.Font = new Font("Arial", 12);
                 this.phylesis.AutoSize = true;
                 this.phylesis.Size = new System.Drawing.Size(200, 20);
                 this.Controls.Add(this.phylesis);
 
                 this.nodePath = new Panel();
-                this.nodePath.Location = new System.Drawing.Point(start + 50, 250 + zoneMenuHeight / 5);
+                this.nodePath.Location = new System.Drawing.Point(start + 50, 275 + zoneMenuHeight / 5);
                 this.nodePath.Size = new System.Drawing.Size(2 * zoneMenuWidth / 5, 50);
                 this.nodePath.AutoScroll = true;
                 this.Controls.Add(nodePath);
@@ -499,10 +497,21 @@ namespace Tree_of_Life
             int initial = 0;
             if (selectedNode != null)
             {
-                ArrayList revPath = selectedNode.getPath();
-                revPath.Reverse();
+                ArrayList path = new ArrayList();
+                path.Add(selectedNode);
+                //revPath.Reverse();
 
-                foreach (int id in revPath)
+                Node n = selectedNode;
+                while (n != modele.getRootNode())
+                {
+                    path.Add(n.getParentNode());
+                    n = n.getParentNode();
+                }
+
+                path.Reverse();
+               
+
+                foreach (Node node in path)
                 {
                     Label dash = new Label();
                     dash.Location = new System.Drawing.Point(initial, 0);
@@ -514,8 +523,7 @@ namespace Tree_of_Life
 
                     initial += 15;
 
-
-                    PathLabel l = new PathLabel(modele.getNodes()[id], this, this.arbre);
+                    PathLabel l = new PathLabel(node, this, this.arbre);
                     l.Location = new System.Drawing.Point(initial, 0);
                     l.Font = new Font("Arial", 12);
                     l.AutoSize = true;
@@ -527,6 +535,49 @@ namespace Tree_of_Life
                 }
 
             }
+        }
+
+
+        /*
+         * Met à jour les infos du noeud cliqué dans ZoneMenu
+         * @param Node node
+         */
+        public void updateInfos(Node node)
+        {
+            setSelectedNode(node);
+
+            //mise à jour du pathLabel du nom de l'espèce
+            this.especeCliquée.Text = node.getName();
+            this.especeCliquée.setNode(node);
+
+            nodePath.Controls.Clear();
+            printPath(start, nodePath);
+
+            if (node.hasWebsiteNode())
+            {
+                website.Text = "http://tolweb.org/$" + node.getName() + "/$" + node.getId();
+                website.ActiveLinkColor = Color.Blue;
+                website.ForeColor = Color.Blue;
+            }
+            else
+            {
+                website.Text = "Pas de site internet disponible";
+                website.ActiveLinkColor = Color.Black;
+                website.ForeColor = Color.Black;
+            }
+
+            if (node.isExtinctNode())
+            {
+                extinct.Text = "Espèce éteinte";
+                extinct.ForeColor = Color.Red;
+            }
+            else
+            {
+                extinct.Text = "Espèce en vie";
+                extinct.ForeColor = Color.Green;
+            }
+
+            phylesis.Text = "Phylesis : " + node.getPhylesis();
         }
 
 
