@@ -21,12 +21,6 @@ namespace Tree_of_Life
         ZoneArbre arbre;
         ZoneMenu menu;
 
-        public Controler(Modele modele, ZoneArbre zoneArbre, ZoneMenu zoneMenu)
-        {
-            this.modele = modele;
-            this.arbre = zoneArbre;
-            this.menu = zoneMenu;
-        }
 
         //Classe pour représenter les boutons pour les nodes
         public class NodeButton : Button
@@ -35,6 +29,7 @@ namespace Tree_of_Life
             public static ZoneArbre arbre;
             public static ZoneMenu menu;
 
+
             public static void setZoneArbre(ZoneArbre a)
             {
                 if (arbre == null)
@@ -42,6 +37,8 @@ namespace Tree_of_Life
                     NodeButton.arbre = a;
                 }
             }
+
+
             public static void setZoneMenu(ZoneMenu m)
             {
                 if (menu == null)
@@ -49,6 +46,7 @@ namespace Tree_of_Life
                     NodeButton.menu = m;
                 }
             }
+
 
             public NodeButton(Modele.Node node, Point p)
             {
@@ -61,15 +59,12 @@ namespace Tree_of_Life
                 this.Location = p;
                 this.Cursor = Cursors.Hand;
             }
-            public Modele.Node getNode()
-            {
-                return node;
-            }
+
 
             protected override void OnClick(EventArgs e)
             {
                 menu.updateInfos(node);
-                
+
             }
         }
 
@@ -80,16 +75,20 @@ namespace Tree_of_Life
             public static ZoneArbre arbre;
             public static ZoneMenu menu;
 
+
             public static void setZoneArbre(ZoneArbre a)
             {
                 if (arbre == null)
                     ClusterButton.arbre = a;
             }
+
+
             public static void setZoneMenu(ZoneMenu m)
             {
                 if (menu == null)
                     ClusterButton.menu = m;
             }
+
 
             public ClusterButton(Modele.Node node, Point p)
             {
@@ -112,6 +111,8 @@ namespace Tree_of_Life
 
             }
 
+
+
             protected override void OnPaint(PaintEventArgs e)
             {
                 base.OnPaint(e);
@@ -127,10 +128,6 @@ namespace Tree_of_Life
                 }
             }
 
-            public Modele.Node getNode()
-            {
-                return node;
-            }
 
             protected override void OnClick(EventArgs e)
             {
@@ -138,6 +135,10 @@ namespace Tree_of_Life
                 menu.updateInfos(node);
             }
         }
+
+
+
+
 
 
 
@@ -163,6 +164,7 @@ namespace Tree_of_Life
                 this.Cursor = Cursors.Hand;
             }
 
+
             public PathLabel(Node n, ZoneMenu m, ZoneArbre a)
             {
                 this.menu = m; this.arbre = a;
@@ -171,6 +173,7 @@ namespace Tree_of_Life
                 this.Click += Label_Click;
                 this.Cursor = Cursors.Hand;
             }
+
 
             public void setNode(Node n) { this.node = n; }
             
@@ -198,6 +201,7 @@ namespace Tree_of_Life
             ZoneMenu menu;
 
             ArrayList filters;
+
 
             public SearchBox(Modele m, ZoneMenu me, Point p) {
                 modele = m;
@@ -241,9 +245,8 @@ namespace Tree_of_Life
                 checkBoxAlive.Location = new Point(loc.X + 250, 65);
                 checkBoxAlive.Size = new Size(200, 30);
                 me.Controls.Add(checkBoxAlive);
-
-
             }
+
 
             private void setFilter(object sender, EventArgs e) {
                 CheckBox checkBox = ((CheckBox)sender);
@@ -252,10 +255,9 @@ namespace Tree_of_Life
             }
 
 
-
             public void search(object sender, EventArgs e) 
             {
-                if( resultLabels.Count > 0 || resultLabels.Count != null) {
+                if( resultLabels.Count > 0 || resultLabels != null) {
                     foreach (Label l in resultLabels)
                     {
                         this.menu.Controls.Remove(l);
@@ -281,6 +283,7 @@ namespace Tree_of_Life
                     y += 25;
                 }
             }
+
 
             public bool applyFilters(Node n)
             {
@@ -312,9 +315,6 @@ namespace Tree_of_Life
                 return res;
             }
 
-            public void setLoc(int x, int y) {
-                loc.X = x; loc.Y = y;
-            }
 
             public void setSiz(int l, int r)
             {

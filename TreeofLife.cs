@@ -46,6 +46,10 @@ namespace Tree_of_Life
 
 
 
+
+
+
+
         //ECRAN DE L'ARBRE -------------------------------------------------------------------
         public class ZoneArbre : ScrollableControl
         {
@@ -53,84 +57,80 @@ namespace Tree_of_Life
             public static Dictionary<Modele.Node, Point> positions;
             public static Dictionary<Node, System.Windows.Forms.Button> buttons = new Dictionary<Node, System.Windows.Forms.Button>();
             public static ArrayList links;
-
             public static Modele.Node rootNode;
-   
-            private int topNodeX;
-            private int topNodeY;
 
-        //taille de la zone Arbre (stockée au cas où, à voir pour plus tard)
-        public int zoneArbreWidth;
+            //sert pour l'affichage
+            public static bool init = true;
+            private int maxX = 0; 
+
+
+            //taille de la zone Arbre (stockée au cas où, à voir pour plus tard)
+            public int zoneArbreWidth;
             public int zoneArbreHeight;
 
-        //Constantes de taille
-        public static int tailleNode = 70;
-        public static int espaceNodeX = 10;
-        public static int espaceNodeY = 20;
-
-            public static bool init = true;
+            //Constantes de taille
+            public static int tailleNode = 70;
+            public static int espaceNodeX = 10;
+            public static int espaceNodeY = 20;
 
 
 
-        public ZoneArbre(Modele modele, int w, int h) : base()
-        {
-            this.modele = modele;
-            this.Location = new System.Drawing.Point(0, 0);
-            //this.Size = new System.Drawing.Size(1000, 800);
-            this.zoneArbreWidth = w; this.zoneArbreHeight = h;
-            this.Size = new System.Drawing.Size(w, h);
-            this.BackColor = Color.Beige;
-            positions = new Dictionary<Modele.Node, Point>();
-            links = new ArrayList();
-            rootNode = modele.getRootNode();
-            this.AutoScroll = true;
 
-
-            calcTree(rootNode);
-            foreach (Modele.Node node in positions.Keys)
+            public ZoneArbre(Modele modele, int w, int h) : base()
             {
-                createNode(node, positions[node].X, positions[node].Y);
-            }
-        }
+                this.modele = modele;
+                this.Location = new System.Drawing.Point(0, 0);
+                this.zoneArbreWidth = w; this.zoneArbreHeight = h;
+                this.Size = new System.Drawing.Size(w, h);
+                this.BackColor = Color.Beige;
+                positions = new Dictionary<Modele.Node, Point>();
+                links = new ArrayList();
+                rootNode = modele.getRootNode();
+                this.AutoScroll = true;
 
+                calcTree(rootNode);
+                foreach (Modele.Node node in positions.Keys)
+                {
+                    createNode(node, positions[node].X, positions[node].Y);
+                }
+            }
        
 
-        public void setRootNode(Modele.Node n)
-        {
-            rootNode= n;
-            foreach ((Node node, Control c) in buttons)
+            public void setRootNode(Modele.Node n)
             {
-                Controls.Remove(c);
-                c.Dispose();
-            }
-            buttons.Clear();
-            positions.Clear();
-            links.Clear();
+                rootNode= n;
+                foreach ((Node node, Control c) in buttons)
+                {
+                    Controls.Remove(c);
+                    c.Dispose();
+                }
+                buttons.Clear();
+                positions.Clear();
+                links.Clear();
 
-            init = true;
-            calcTree(rootNode);
-            foreach (Modele.Node node in positions.Keys)
-            {
-                createNode(node, positions[node].X, positions[node].Y);
+                init = true;
+                calcTree(rootNode);
+                foreach (Modele.Node node in positions.Keys)
+                {
+                    createNode(node, positions[node].X, positions[node].Y);
+                }
             }
-        }
 
-        /*
-         * Dessine un noeud
-         * @param node : le noeud à dessiner
-         * @param x : la position x du noeud
-         * @param y : la position y du noeud
-         * @param pevent : l'événement de peinture
-         */
-        public void createNode(Modele.Node node, int x, int y)
+
+            /*
+             * Dessine un noeud
+             * @param node : le noeud à dessiner
+             * @param x : la position x du noeud
+             * @param y : la position y du noeud
+             */
+            public void createNode(Modele.Node node, int x, int y)
             {
                 Brush b = new SolidBrush(Color.Orange);
-
                 if (node.isClusterNode())
                 {
                     ClusterButton cn = new ClusterButton(node, new Point(x, y));
                     Controls.Add(cn);
-                buttons.Add(node, cn);
+                    buttons.Add(node, cn);
                 }
                 else
                 {
@@ -140,19 +140,7 @@ namespace Tree_of_Life
                 }
             }
 
-           
-
-
             
-
-            private int maxX = 0; //sert pour l'affichage
-
-            /* On va d'abord tt en haut de l'arbre
-             * p sera la position du noeud en haut à gauche de l'arbre
-             * on fixe les positions de tous les enfants
-             * puis on prend le premier enfant et le dernier et on fait la moyenne des positiosn
-             * on pourra par la suite faire une translation sur tous les noeuds de l'arbre pour le centrer
-             */
             public bool calculPos(Modele.Node node, int y)
             {
                 if (!positions.ContainsKey(node)) { // si le noeud n'est pas encore dans l'arbre
@@ -184,23 +172,17 @@ namespace Tree_of_Life
                         return true;
                     }
                 }
-            return false;
+                return false;
             }
 
 
-        public void calcTree(Node root)
-        {
-            maxX = 0;
-            calculPos(root,20);
-        }
-       
+            public void calcTree(Node root)
+            {
+                maxX = 0;
+                calculPos(root,20);
+            }
 
-        
 
-            /*
-             * Redessine l'écran
-             * @param pevent : l'événement de peinture
-             */
             protected override void OnPaint(PaintEventArgs pevent)
             {
             if (init)
@@ -229,12 +211,13 @@ namespace Tree_of_Life
             
             }
 
-        protected override void OnScroll(ScrollEventArgs se)
-        {
-            base.OnScroll(se);
-            init = true;
-            Invalidate(); // Force le repaint pour redessiner les liens visibles
-        }
+            protected override void OnScroll(ScrollEventArgs se)
+            {
+                base.OnScroll(se);
+                init = true;
+                Invalidate(); // Force le repaint pour redessiner les liens visibles
+            }
+
 
 
 
@@ -279,14 +262,8 @@ namespace Tree_of_Life
             /**************
              * ACCESSEURS *
              **************/
-            public Node getSource()
-            {
-                return source;
-            }
-            public Node getTarget()
-            {
-                return target;
-            }
+            public Node getSource() {  return source; }
+            public Node getTarget() { return target; }
 
         }
 
@@ -310,33 +287,28 @@ namespace Tree_of_Life
         {
             private Modele modele;
             public ZoneArbre arbre;
+
             private PathLabel especeCliquée;
             public LinkLabel website;
             public Label extinct;
             public Label phylesis;
             public Label extinctNb;
             public Label totalNb;
-
             public Panel nodePath;
-
+            private SearchBox searchBox;
 
             public Modele.Node selectedNode;
 
-            private SearchBox searchBox;
-
-
-            //tailles stockées au cas où
             public int zoneMenuWidth;
             public int zoneMenuHeight;
             public int start;
 
 
-        public ZoneMenu(Modele modele, int w, int h, int start, ZoneArbre a) : base()
+            public ZoneMenu(Modele modele, int w, int h, int start, ZoneArbre a) : base()
             {
                 this.modele = modele; this.arbre = a;
                 this.zoneMenuWidth = w; this.zoneMenuHeight = h;
                 this.start = start; // début en x
-
 
                 //Création de la barre de recherche
                 searchBox = new SearchBox(modele, this, new Point(start + 50, 105));
@@ -344,8 +316,6 @@ namespace Tree_of_Life
                 searchBox.Size = new Size(2*zoneMenuWidth/5, 30);
                 searchBox.setSiz(2 * zoneMenuWidth / 5, 30);
                 this.Controls.Add(searchBox);
-                
-
 
                 //Nom de l'espèce lorsque l'on clique
                 this.especeCliquée = new PathLabel(this, this.arbre);
@@ -363,9 +333,9 @@ namespace Tree_of_Life
                 this.website.Font = new Font("Arial", 12);
                 this.website.AutoSize = true;
                 this.website.Size = new System.Drawing.Size(200, 20);
+                this.website.Click += openLink;
                 this.Controls.Add(this.website);
 
-                //plus tard : image venant du site TODO ----------------------------------------------------------------
 
                 this.extinct = new Label();
                 this.extinct.BackColor = Color.FromArgb(255, 200, 255, 200);
@@ -376,7 +346,7 @@ namespace Tree_of_Life
                 this.Controls.Add(this.extinct);
 
                 this.phylesis = new Label();
-            this.phylesis.BackColor = Color.FromArgb(255, 200, 255, 200);
+                this.phylesis.BackColor = Color.FromArgb(255, 200, 255, 200);
                 this.phylesis.Location = new System.Drawing.Point(start + 50, 215 + zoneMenuHeight / 5);
                 this.phylesis.Font = new Font("Arial", 12);
                 this.phylesis.AutoSize = true;
@@ -443,152 +413,138 @@ namespace Tree_of_Life
                     label.Location = (Point) points[i];
                     Controls.Add((label));
                 }
+            }
 
+            public void setSelectedNode(Modele.Node n)
+            {
+                selectedNode = n;
+                nodePath.Controls.Clear();
+                printPath(start, nodePath);
+                ZoneArbre.init = true;
+                arbre.Invalidate();
+            }
 
-
-
-        }
-
-        public void setSelectedNode(Modele.Node n)
-        {
-            selectedNode = n;
-            nodePath.Controls.Clear();
-            printPath(start, nodePath);
-        }
-
-        protected override void OnPaint(PaintEventArgs pevent)
-        {
-            pevent.Graphics.DrawLine(new Pen(Color.DarkGreen, 3), new PointF(start, 0), new Point(start, zoneMenuHeight));
-            pevent.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(255, 200, 255, 200)), new Rectangle(new Point(start+45, 90 + zoneMenuHeight / 5), new Size(2 * zoneMenuWidth / 5 +10 , 245)));
+            protected override void OnPaint(PaintEventArgs pevent)
+            {
+                pevent.Graphics.DrawLine(new Pen(Color.DarkGreen, 3), new PointF(start, 0), new Point(start, zoneMenuHeight));
+                pevent.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(255, 200, 255, 200)), new Rectangle(new Point(start+45, 90 + zoneMenuHeight / 5), new Size(2 * zoneMenuWidth / 5 +10 , 245)));
             
-            Image i = Image.FromFile("../../../Resources/latest.png");
-            pevent.Graphics.DrawImage(i, new Point(zoneMenuWidth - 310, zoneMenuHeight - 300));
+                Image i = Image.FromFile("../../../Resources/latest.png");
+                pevent.Graphics.DrawImage(i, new Point(zoneMenuWidth - 310, zoneMenuHeight - 300));
 
 
-            Image sign = Image.FromFile("../../../Resources/sign.png");
-            pevent.Graphics.DrawImage(sign, new Point(start, zoneMenuHeight - 300));
+                Image sign = Image.FromFile("../../../Resources/sign.png");
+                pevent.Graphics.DrawImage(sign, new Point(start, zoneMenuHeight - 300));
 
 
-            pevent.Graphics.FillRectangle(new SolidBrush(Color.Brown), new Rectangle(new Point(start + 40, zoneMenuHeight / 5 + 375), new Size(2 * zoneMenuWidth / 5 + 15, 115)));
-            pevent.Graphics.FillRectangle(new SolidBrush(Color.DarkGreen), new Rectangle(new Point(start + 45, zoneMenuHeight / 5 + 380), new Size(2 * zoneMenuWidth / 5 + 5, 105)));
+                pevent.Graphics.FillRectangle(new SolidBrush(Color.Brown), new Rectangle(new Point(start + 40, zoneMenuHeight / 5 + 375), new Size(2 * zoneMenuWidth / 5 + 15, 115)));
+                pevent.Graphics.FillRectangle(new SolidBrush(Color.DarkGreen), new Rectangle(new Point(start + 45, zoneMenuHeight / 5 + 380), new Size(2 * zoneMenuWidth / 5 + 5, 105)));
+            }
 
-
-
-        }
-
-        public void printPath(int start, Panel pan)
-        {
-            int initial = 0;
-            if (selectedNode != null)
+            public void printPath(int start, Panel pan)
             {
-                ArrayList path = new ArrayList();
-                path.Add(selectedNode);
-                //revPath.Reverse();
-
-                Node n = selectedNode;
-                while (n != modele.getRootNode())
+                int initial = 0;
+                if (selectedNode != null)
                 {
-                    path.Add(n.getParentNode());
-                    n = n.getParentNode();
+                    ArrayList path = new ArrayList();
+                    path.Add(selectedNode);
+
+                    Node n = selectedNode;
+                    while (n != modele.getRootNode())
+                    {
+                        path.Add(n.getParentNode());
+                        n = n.getParentNode();
+                    }
+                    path.Reverse();
+                
+                    foreach (Node node in path)
+                    {
+                        Label dash = new Label();
+                        dash.Location = new System.Drawing.Point(initial, 0);
+                        dash.Font = new Font("Arial", 12);
+                        dash.AutoSize = true;
+                        dash.Size = new System.Drawing.Size(200, 20);
+                        dash.Text = "/";
+                        pan.Controls.Add(dash);
+
+                        initial += 15;
+
+                        PathLabel l = new PathLabel(node, this, this.arbre);
+                        l.Location = new System.Drawing.Point(initial, 0);
+                        l.Font = new Font("Arial", 12);
+                        l.AutoSize = true;
+                        l.Size = new System.Drawing.Size(200, 20);
+
+                        pan.Controls.Add(l);
+                        initial += l.Size.Width;
+                    }
+                }
+            }
+
+
+            private void openLink(object sender, EventArgs e)
+            {
+                string texte = ((Label)sender).Text;
+                if (texte != "Pas de site internet disponible")
+                try
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = texte,
+                        UseShellExecute = true // Required for modern .NET versions
+                    });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to open the link: {ex.Message}");
+                }
+            }
+
+            /*
+             * Met à jour les infos du noeud cliqué dans ZoneMenu
+             * @param Node node
+             */
+            public void updateInfos(Node node)
+            {
+                setSelectedNode(node);
+                ZoneArbre.init = true;
+                extinctNb.Text ="Nombre d'enfants éteints : "+ node.getNbExtinctChildren();
+                totalNb.Text = "Nombre d'enfants au total : "+ node.getNbChildren();
+
+                //mise à jour du pathLabel du nom de l'espèce
+                this.especeCliquée.Text = node.getName();
+                this.especeCliquée.setNode(node);
+
+                nodePath.Controls.Clear();
+                printPath(start, nodePath);
+
+                if (node.hasWebsiteNode())
+                {
+                    website.Text = "http://tolweb.org/" + node.getName() + "/" + node.getId();
+                    website.ActiveLinkColor = Color.Blue;
+                    website.ForeColor = Color.Blue;
+                }
+                else
+                {
+                    website.Text = "Pas de site internet disponible";
+                    website.ActiveLinkColor = Color.Black;
+                    website.ForeColor = Color.Black;
                 }
 
-                path.Reverse();
-               
-
-                foreach (Node node in path)
+                if (node.isExtinctNode())
                 {
-                    Label dash = new Label();
-                    dash.Location = new System.Drawing.Point(initial, 0);
-                    dash.Font = new Font("Arial", 12);
-                    dash.AutoSize = true;
-                    dash.Size = new System.Drawing.Size(200, 20);
-                    dash.Text = "/";
-                    pan.Controls.Add(dash);
-
-                    initial += 15;
-
-                    PathLabel l = new PathLabel(node, this, this.arbre);
-                    l.Location = new System.Drawing.Point(initial, 0);
-                    l.Font = new Font("Arial", 12);
-                    l.AutoSize = true;
-                    l.Size = new System.Drawing.Size(200, 20);
-
-                    pan.Controls.Add(l);
-                    initial += l.Size.Width;
+                    extinct.Text = "Espèce éteinte";
+                    extinct.ForeColor = Color.Red;
+                }
+                else
+                {
+                    extinct.Text = "Espèce en vie";
+                    extinct.ForeColor = Color.Green;
                 }
 
+                phylesis.Text = "Phylesis : " + node.getPhylesis();
             }
-        }
-
-
-        private void openLink(object sender, EventArgs e)
-        {
-            try
-            {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = ((Label)sender).Text,
-                    UseShellExecute = true // Required for modern .NET versions
-                });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to open the link: {ex.Message}");
-            }
-        }
-
-        /*
-         * Met à jour les infos du noeud cliqué dans ZoneMenu
-         * @param Node node
-         */
-        public void updateInfos(Node node)
-        {
-            setSelectedNode(node);
-            extinctNb.Text ="Nombre d'enfants éteints : "+ node.getNbExtinctChildren();
-            totalNb.Text = "Nombre d'enfants au total : "+ node.getNbChildren();
-
-
-            //mise à jour du pathLabel du nom de l'espèce
-            this.especeCliquée.Text = node.getName();
-            this.especeCliquée.setNode(node);
-
-            nodePath.Controls.Clear();
-            printPath(start, nodePath);
-
-            if (node.hasWebsiteNode())
-            {
-                website.Text = "http://tolweb.org/" + node.getName() + "/" + node.getId();
-                website.ActiveLinkColor = Color.Blue;
-                website.ForeColor = Color.Blue;
-                website.Click += openLink;
-            }
-            else
-            {
-                website.Text = "Pas de site internet disponible";
-                website.ActiveLinkColor = Color.Black;
-                website.ForeColor = Color.Black;
-            }
-
-            if (node.isExtinctNode())
-            {
-                extinct.Text = "Espèce éteinte";
-                extinct.ForeColor = Color.Red;
-            }
-            else
-            {
-                extinct.Text = "Espèce en vie";
-                extinct.ForeColor = Color.Green;
-            }
-
-            phylesis.Text = "Phylesis : " + node.getPhylesis();
-
-
-        }
 
 
         } //FIN ZONE MENU ------------------------------------------------------------------------------------
-    
-
-
-
     }

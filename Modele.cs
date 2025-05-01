@@ -12,7 +12,6 @@ namespace Tree_of_Life
     {
 
         private Dictionary<int, Node> nodes = new Dictionary<int, Node>(); //id -> node
-        //AutoCompleteStringCollection speciesList;
         private Dictionary<string, Node> speciesList = new Dictionary<string, Node>();
         public Dictionary<string, Node> getSpeciesList() { return this.speciesList; }
 
@@ -25,16 +24,16 @@ namespace Tree_of_Life
             var links = new StreamReader(File.OpenRead("../../../data/treeoflife_links.csv"));
             var nodes = new StreamReader(File.OpenRead("../../../data/treeoflife_nodes.csv"));
 
-            Debug.Print(nodes.ReadLine()); //on enleve l'entete
-
+            nodes.ReadLine();
             //Création des nodes
             while (!nodes.EndOfStream)
             {
                 string line = nodes.ReadLine();
-                //Debug.Print(line);
                 string[] values = line.Split(',');
 
-                if (values.Length == 8)
+                //Dans le csv il ya des nodes dont le nom contient une virgule qui est également le séparateur du csv
+                //Cela créé des problèmes donc on a décidé d'ignorer ces noeuds la
+                if (values.Length == 8) 
                 {
                     this.nodes.Add(Int32.Parse(values[0]), new Modele.Node(values));
                 }
@@ -45,7 +44,6 @@ namespace Tree_of_Life
             while (!links.EndOfStream)
             {
                 string line = links.ReadLine();
-                //Debug.Print(line);
                 string[] values = line.Split(',');
 
                 int parentId = Int32.Parse(values[0]);
@@ -77,17 +75,7 @@ namespace Tree_of_Life
          ****************/
         public Node getRootNode()
         {  return this.nodes[1]; } //donne la racine de l'arbre
-        
-        public Dictionary<int, Node> getNodes()
-        { return this.nodes; } //donne le dictionnaire de tous les noeuds
-
-
-        //public AutoCompleteStringCollection getSpeciesList()
-        //{
-        //    return this.speciesList;
-        //}
-
-
+           
 
         /****************************************************************
          * Classe Node : représente un noeud de l'arbre aka une espèce
@@ -167,19 +155,10 @@ namespace Tree_of_Life
             public bool hasWebsiteNode() { return hasWebsite; }
             public bool isExtinctNode() { return extinct; }
             public bool isClusterNode() { return isCluster; }
-            
-            public Confidence getConfidence() { return confidence; }
             public Phylesis getPhylesis() { return phylesis; }
-
             public Color getShade() { return shade; }
 
-            public ArrayList getPath() { return path; }
 
-
-
-
-            /** TODO
-             */
             private Confidence stringToConfidence(string i)
             {
                 switch (i)
@@ -189,6 +168,7 @@ namespace Tree_of_Life
                     default: return Confidence.NOTCONFIDENT;
                 }
             }
+
 
             private Phylesis stringToPhylesis(string i)
             {
@@ -209,6 +189,7 @@ namespace Tree_of_Life
                 }
             }
 
+
             public void countChildren(Node n)
             {
                 if(n.getNbChildren() == -1 )
@@ -227,12 +208,12 @@ namespace Tree_of_Life
                 }
             }
 
+
             public void setShade()
             {
                 if (isCluster)
                 {
                     int green = Convert.ToInt32(200 * (1-Decimal.Divide(nbExtinctChildren, nbChildren)));
-                    Debug.Print(name+" : " + green);
                     shade = Color.FromArgb(200, 0, green, 0);
                 }
                 else
@@ -245,15 +226,6 @@ namespace Tree_of_Life
                         shade = Color.FromArgb(255, 0, 200, 0); //green
                 }
             }
-
-            //public void setPath(Node n)
-            //{
-            //    this.path.Add(n.getId());
-            //    if (n.getParentNode() != null)
-            //    {
-            //        this.setPath(n.getParentNode());
-            //    }
-            //}
         }
 
 

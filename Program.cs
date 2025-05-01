@@ -11,18 +11,6 @@ namespace Tree_of_Life
         /// </summary>
         [STAThread]
 
-        public static Modele.Node? getNode(ArrayList nodeList, int nodeId)
-        {
-            foreach (Modele.Node node in nodeList)
-            {
-                if (node.getId() == nodeId) 
-                {
-                    return node; 
-                } 
-            }
-            return null;
-        }
-
         static void Main()
         {
             // To customize application configuration such as set high DPI settings or default font,
