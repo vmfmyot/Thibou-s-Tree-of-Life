@@ -10,7 +10,7 @@ This small program was made by [Sidonie Minodier](https://github.com/shidowe) an
 
 The screen is split in 2 : on the left side, the **Tree Section**, which shows the current phylogenetic tree, and on the right the **Information Panel**, which shows informations relative to a selected node.
 
-#### **1. Tree Section :**
+### **1. Tree Section :**
 
 Each species is represented by a **Node**. When a species has over 5 children (descendants), it appears as a round button : a **cluster**.\
 \
@@ -19,7 +19,7 @@ All nodes are buttons : clicking on them will **select** them and **shows the in
 The Tree Section is a ScrollableControl : a **horizontal scrollbar** is located at the bottom of the screen. The initial view shows the **complete tree**, starting from the original node **Life on Earth**, with its clusters closed off. When selecting a cluster, it will open and show a tree with the selected node as its new root.
 
 
-#### **2. Information Panel :**
+### **2. Information Panel :**
 
 At the top of the Information Panel is a **search bar**, with **filter checkboxes**. The user can simply type in a word and select a result. The selected node will appear as the root of a tree in the **Tree Section**.\
 \
