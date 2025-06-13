@@ -14,7 +14,7 @@ The screen is split in 2 : on the left side, the **Tree Section**, which shows t
 
 Each species is represented by a **Node**. When a species has over 5 children (descendants), it appears as a round button : a **cluster**.\
 \
-All nodes are buttons : clicking on them will **select** them and **shows the information relevant to the represented species** in the Information Panel. When a species is **extinct**, its Node appears **black**; if not then **green**. For clusters, the more extinct descendants a species has, the darker it appears.\
+All nodes are buttons : clicking on them will **select** them and **show the information relevant to the represented species** in the Information Panel. When a species is **extinct**, its Node appears **black**; if not then **green**. For clusters, the more extinct descendants a species has, the darker it appears.\
 \
 The Tree Section is a ScrollableControl : a **horizontal scrollbar** is located at the bottom of the screen. The initial view shows the **complete tree**, starting from the original node **Life on Earth**, with its clusters closed off. When selecting a cluster, it will open and show a tree with the selected node as its new root.
 
@@ -23,7 +23,7 @@ The Tree Section is a ScrollableControl : a **horizontal scrollbar** is located 
 
 At the top of the Information Panel is a **search bar**, with **filter checkboxes**. The user can simply type in a word and select a result. The selected node will appear as the root of a tree in the **Tree Section**.\
 \
-Whenever a node is **selected**, its **relevant information** will be displayed in the Information Panel : species name, extinct status, wbesite link, phylesis type, path in the tree, number of children and number of extinct children. Selecting a species from the path or the name itself allows the user to travel back and forth through the phylogenetic tree.\
+Whenever a node is **selected**, its **relevant information** will be displayed in the Information Panel : species name, extinct status, website link, phylesis type, path in the tree, number of children and number of extinct children. Selecting a species from the path or the name itself allows the user to travel back and forth through the phylogenetic tree.\
 \
 If the nodes contains a **valid link** to the [tolweb.org](tolweb.org) website, **clicking on the link** will open a window to the aforementioned link directly in the browser, in which the user can access additional information about the species.\
 \
